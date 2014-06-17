@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<h1>
+    List of tests for {{tests.job}}
+</h1>
+<ul>
+    {% for test in tests.tests %}
+        <li>
+        <a href="tests/{{test}}">{{test}}</a>
+        </li>
+    {% endfor %}
+</ul>

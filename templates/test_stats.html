@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<h1>
+    Test statistics for {{tests[0].test_name}}
+</h1>
+<ul>
+    {% for test in tests %}
+        <li>
+        {% if test.result == 'Passed' %}
+            o
+        {% elif test.result == 'Expected Failure' %}
+            x
+        {% else %}
+            !
+        {% endif %}
+        </li>
+    {% endfor %}
+</ul>
