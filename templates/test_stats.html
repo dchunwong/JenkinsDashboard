@@ -1,17 +1,105 @@
-<!DOCTYPE HTML>
-<h1>
-    Test statistics for {{tests[0].test_name}}
-</h1>
-<ul>
-    {% for test in tests %}
-        <li>
-        {% if test.result == 'Passed' %}
-            o
-        {% elif test.result == 'Expected Failure' %}
-            x
+<style>
+a.Passed{
+    color: green;
+}
+a.Skipped{
+    color: khaki;
+}
+a.Error{
+    color: firebrick;
+}
+a.Failure{
+    color: salmon;
+}
+a.Expected.Failure{
+    color: DarkOrange;
+}
+#legend_container{
+    vertical-align: top;
+}
+#chart_container{
+    display: inline-block;
+    min-width: 371px;
+    padding: 10px;
+}
+#legend{
+    background-color: white;
+}
+#chart{
+    display: inline-block;
+    max-width: 810px;
+    max-height: 375px;
+}
+#yaxis{
+    display: inline-block;
+    vertical-align: top;
+    width: 30px;
+}
+#chart.rickshaw_graph .detail .x_label{
+    color: black;
+/*    white-space: normal;
+    word-wrap: normal;
+    overflow: scroll;*/
+}
+
+</style>
+{% extends "layout.html" %}
+{% block body %}
+<script>
+var test_data = [];
+{% for test_dict in tests %}
+    test_data[{{loop.index0}}] = {};
+    idx = {{loop.index0}};
+    {% for key, value in test_dict.items() %}
+        {% if 'revision' in key %}
+            test_data[idx].{{key}} = {};
+            {% for subkey, subvalue in value.items() %}
+                test_data[idx].{{key}}.{{subkey}} = "{{subvalue}}";
+            {% endfor %}
+        {% elif key == "test_list" %}
+            test_data[idx].{{key}} = [];
+            {% for test in value %}
+                test_data[idx].{{key}}[{{loop.index0}}] = {};
+                inneridx = {{loop.index0}};
+                {% for subkey, subvalue in test.items() %}
+                    test_data[idx].{{key}}[inneridx].{{subkey}} = "{{subvalue}}";
+                    {% if subkey == "duration" %}
+                        test_data[idx].{{key}}[inneridx].{{subkey}} = + test_data[idx].{{key}}[inneridx].{{subkey}};
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
         {% else %}
-            !
+            test_data[idx].{{key}} = "{{value}}";
+            if(!isNaN(test_data[idx].{{key}})){
+                test_data[idx].{{key}} = + test_data[idx].{{key}};
+            }
         {% endif %}
-        </li>
+    {% endfor %}
+{% endfor %}
+</script>
+<h1>
+    Test statistics for {{tests[0].test_list[0].test_name}}
+</h1>
+<div id="graph_container">
+    <div id="chart_container">
+        <div id="yaxis"></div>
+        <div id="chart"></div>
+    </div>
+    <span id="legend_container">
+        <div id="legend"></div>
+    </span>
+    <div id="preview"></div>
+</div>
+<ul>
+    {% for test_dict in tests %}
+        {% for test in test_dict.test_list %}
+            <li>
+            <a href="../../{{test_dict.build}}" class="{{test.result}}">
+            {{test_dict.build}}: {{test.result}}
+            </a>
+            </li>
+        {% endfor %}
     {% endfor %}
 </ul>
+<script src="/graphing.js"></script>
+{% endblock %}

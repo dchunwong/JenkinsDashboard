@@ -1,13 +1,26 @@
-<!DOCTYPE HTML PUBLIC>
-<html lang="en">
-
-<body>
-    <form name="input" action ="/search/" method="post">
-        <input required type="text" name="job" placeholder="Job Name"/>
-        <input type="text" name="build" placeholder="Build #"/>
-        <input type="text" name="test" placeholder="Test Name"/>
-        <button type="submit">
-            Fetch!
-        </button>
-    </form>
-</body>
+{% extends "layout.html" %}
+{% block body %}
+{% set limit = 10 %}
+{% set len= (((jobs|length)/limit)|round(method='floor')|int) %}
+{%for i in range(len) %}
+        <div class="object_container">
+        {%for j in range(limit)%}
+            <a href="job/{{jobs[j+i*limit]}}/tests">
+                <div class="job">
+                {{jobs[j+i*limit]}} 
+                </div>
+            </a>
+        {% endfor %}
+        </div>
+{% endfor %}
+{% if jobs|length % limit != 0 %}
+    <div class="object_container">
+        {% for i in range(jobs|length % limit) %}
+            <a href="job/{{jobs[i+len]}}/tests">
+                <div class="job">
+                {{jobs[i+len]}} 
+                </div>
+            </a>
+        {% endfor %}
+{% endif %}
+{% endblock %}
