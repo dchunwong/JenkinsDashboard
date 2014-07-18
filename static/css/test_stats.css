@@ -1,0 +1,67 @@
+a.Passed{
+    color: green;
+}
+a.Skipped{
+    color: darkKhaki;
+}
+a.Error{
+    color: firebrick;
+}
+a.Failure{
+    color: salmon;
+}
+a.Expected.Failure{
+    color: DarkOrange;
+}
+a.Unexpected.Pass{
+    color:SteelBlue;
+}
+#legend_container{
+    vertical-align: top;
+}
+#chart_container{
+    display: inline-block;
+    min-width: 371px;
+    padding: 10px;
+}
+#legend{
+    background-color: white;
+    color: #57626E;
+}
+#chart{
+    display: inline-block;
+    max-width: 810px;
+    max-height: 375px;
+}
+#yaxis{
+    display: inline-block;
+    vertical-align: top;
+    width: 30px;
+}
+#chart.rickshaw_graph .detail .x_label{
+    color: black;
+/*    white-space: normal;
+    word-wrap: normal;
+    overflow: scroll;*/
+}
+
+#chart{
+    cursor: pointer;
+}
+.ui-slider-horizontal{
+    background-color: gainsboro;
+    border-radius: 4px;
+}
+
+.ui-slider-handle{
+    background-color: whitesmoke;
+    border-radius: 4px;
+    border: 1px solid #DCDCDC;
+}
+
+.ui-slider-range {
+    background-color: whitesmoke;
+}
+#preview{
+    left:40px;
+}

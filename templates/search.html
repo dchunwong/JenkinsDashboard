@@ -1,26 +1,60 @@
 {% extends "layout.html" %}
 {% block body %}
 {% set limit = 10 %}
-{% set len= (((jobs|length)/limit)|round(method='floor')|int) %}
-{%for i in range(len) %}
-        <div class="object_container">
-        {%for j in range(limit)%}
-            <a href="job/{{jobs[j+i*limit]}}/tests">
-                <div class="job">
-                {{jobs[j+i*limit]}} 
+{% set curlen= (((jobs.current|length)/limit)|round(method='floor')|int) %}
+{% set leglen= (((jobs.legacy|length)/limit)|round(method='floor')|int) %}
+{% if jobs.current|length > 0 %}
+    <div class="group_container">
+        <h1>Active Jobs</h1>
+        {%for i in range(curlen) %}
+                <div class="object_container">
+                {%for j in range(limit)%}
+                    <a href="job/{{jobs.current[j+i*limit]}}/tests">
+                        <div class="job">
+                        {{jobs.current[j+i*limit]}} 
+                        </div>
+                    </a>
+                {% endfor %}
                 </div>
-            </a>
         {% endfor %}
-        </div>
-{% endfor %}
-{% if jobs|length % limit != 0 %}
-    <div class="object_container">
-        {% for i in range(jobs|length % limit) %}
-            <a href="job/{{jobs[i+len]}}/tests">
-                <div class="job">
-                {{jobs[i+len]}} 
+        {% if jobs.current|length % limit != 0 %}
+            <div class="object_container">
+                {% for i in range(jobs.current|length % limit) %}
+                    <a href="job/{{jobs.current[i+curlen*limit]}}/tests">
+                        <div class="job">
+                        {{jobs.current[i+curlen*limit]}} 
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+{% if jobs.legacy|length > 0 %}
+    <div class="group_container">
+        <h1>Legacy Jobs</h1>
+        {%for i in range(leglen) %}
+                <div class="object_container">
+                {%for j in range(limit)%}
+                    <a href="job/{{jobs.legacy[j+i*limit]}}/tests">
+                        <div class="job legacyjob">
+                        {{jobs.legacy[j+i*limit]}} 
+                        </div>
+                    </a>
+                {% endfor %}
                 </div>
-            </a>
         {% endfor %}
+        {% if jobs.legacy|length % limit != 0 %}
+            <div class="object_container">
+                {% for i in range(jobs.legacy|length % limit) %}
+                    <a href="job/{{jobs.legacy[i+leglen*limit]}}/tests">
+                        <div class="job legacyjob">
+                        {{jobs.legacy[i+leglen*limit]}} 
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 {% endif %}
 {% endblock %}

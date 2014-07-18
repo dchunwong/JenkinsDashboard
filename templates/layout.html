@@ -1,85 +1,43 @@
 <!DOCTYPE HTML PUBLIC>
 <html lang="en">
 <head>
-    <style>
-        .job, .test{
-            padding: 10px;
-            margin: 2.5px;
-            font-family: sans-serif;
-            color: white;
-        }
-        .job{
-            background-color: seagreen;
-        }
-        .test{
-            background-color: SteelBlue;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-
-        .object_container{
-            display: inline-block;
-            margin-bottom: 5px;
-            vertical-align: top;
-            max-width: 325px;
-        }
-        #banner{
-            background-color: lightslategrey;
-            padding: 10px;
-            color: white;
-            margin-bottom: 10px;
-        }
-        #banner a{
-            color: white;
-        }
-        *{
-            font-family: sans-serif;
-            transition: all .1s ease;
-            -moz-transition: all .1s ease;
-            color: #57626E;
-        }
-        a{
-            text-decoration: none;
-        }
-
-        body{
-            margin: 0;
-        }
-        form{
-            vertical-align: middle;
-            display: inline-block;
-            margin-bottom: 0;
-        }
-        input{
-            background-color: white;
-            border: none;
-            padding: 5px;
-        }
-        button{
-            background-color: white;
-            border:none;
-            padding: 4px;
-        }
-        #container{
-            padding-left: 10px;
-        }
-    </style>
+    <meta content='True' name='HandheldFriendly' />
+    <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no; minimum-scale=1;'  name='viewport' />
+    <link href="/css/layout.css" rel="stylesheet"></link>
     <script src="/bower_components/d3/d3.js" charset="utf-8"></script>
     <script src="/bower_components/rickshaw/rickshaw.js" charset="utf-8"></script>
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <link href="/bower_components/select2/select2.css" rel="stylesheet"/>
+    <script src="/bower_components/select2/select2.js"></script>
     <script src="/jui/jquery-ui.js"></script>
+    <script src="/js/layout.js"></script>
     <link rel="stylesheet" type="text/css" href="/bower_components/rickshaw/rickshaw.css">
 </head>
 <body>
     <div id="banner">
-    <a href="/">Home</a> | 
-    <a href="javascript:history.back(-1)">Back</a> | 
-    <form name="input" action ="/search/" method="post">
-        <input required type="text" name="job" placeholder="Job Name"/>
-        <input type="text" name="build" placeholder="Build #"/>
-        <input type="text" name="test" placeholder="Test Name"/>
-        <button type="submit">
-            Fetch!
+    <a href="/">
+        <div class="bannerbutton">
+            B2G Jenkins Job Dashboard
+        </div>
+    </a>
+    <form id="search" name="input" action ="/search/" method="post">
+        <select name="job" id="jobselect" required>
+            <option></option>
+            <optgroup label="Active">
+            {% for job in jobs.current %}
+                <option value="{{job}}">{{job}}</option>
+            {% endfor %}
+            </optgroup>
+            <optgroup label="Legacy">
+                {% for job in jobs.legacy %}
+                    <option value="{{job}}">{{job}}</option>
+                {% endfor %}
+            </optgroup>
+        </select>
+        <input type="hidden" name="build" id="buildselect"/>
+        <input type="hidden" name="test" id="testselect"/>
+        <button type="submit" class="bannerbutton">
+            Fetch
         </button>
     </form>
     </div>

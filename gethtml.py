@@ -71,7 +71,7 @@ def fetch_build_html(job, build):
     report = handle.read()
     soup = BeautifulSoup(report)
 
-    if 'Not found' in soup.body.text or soup.title.text != 'Test Report':
+    if soup.body == None or 'Not found' in soup.body.text or soup.title.text != 'Test Report':
         if v:
             print 'No HTML Report for %s:%s! Skipping...' % (job, str(build))
         skip.write(str(build)+'\n')
@@ -101,6 +101,7 @@ def fetch_all_builds(job):
             if v:
                 print '%s:%s Already Fetched!' % (job, i) 
             continue
+        print "Fetching %s:%s" % (job, i)
         fetch_build_html(job, i)
 
 def fetch_all_job_reports():

@@ -1,51 +1,9 @@
-<style>
-a.Passed{
-    color: green;
-}
-a.Skipped{
-    color: khaki;
-}
-a.Error{
-    color: firebrick;
-}
-a.Failure{
-    color: salmon;
-}
-a.Expected.Failure{
-    color: DarkOrange;
-}
-#legend_container{
-    vertical-align: top;
-}
-#chart_container{
-    display: inline-block;
-    min-width: 371px;
-    padding: 10px;
-}
-#legend{
-    background-color: white;
-}
-#chart{
-    display: inline-block;
-    max-width: 810px;
-    max-height: 375px;
-}
-#yaxis{
-    display: inline-block;
-    vertical-align: top;
-    width: 30px;
-}
-#chart.rickshaw_graph .detail .x_label{
-    color: black;
-/*    white-space: normal;
-    word-wrap: normal;
-    overflow: scroll;*/
-}
-
-</style>
+<link href="/css/test_stats.css" rel="stylesheet" type="text/css"></link>
+<link href="/jui/jquery-ui.css" rel="stylesheet" type="text/css"></link>
 {% extends "layout.html" %}
 {% block body %}
 <script>
+var clearDate = {{clearDate}};
 var test_data = [];
 {% for test_dict in tests %}
     test_data[{{loop.index0}}] = {};
@@ -101,5 +59,5 @@ var test_data = [];
         {% endfor %}
     {% endfor %}
 </ul>
-<script src="/graphing.js"></script>
+<script src="/js/graphing.js"></script>
 {% endblock %}

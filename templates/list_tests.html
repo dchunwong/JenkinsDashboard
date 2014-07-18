@@ -1,30 +1,30 @@
 {% extends "layout.html" %}
 {% block body %}
 <h1>
-    List of tests for {{tests.job}}
+    List of tests for {{job}}
 </h1>
-    {% if tests.tests == 'No tests exist' %}
-        {{tests.tests}}
+    {% if test_list == 'No tests exist' %}
+        {{test_list}}
     {% else %}
     {% set limit = 15 %}
-        {% set len= (((tests.tests|length)/limit)|round(method='floor')|int) %}
+        {% set len= (((test_list|length)/limit)|round(method='floor')|int) %}
         {%for i in range(len) %}
                 <div class="object_container">
                 {%for j in range(limit)%}
-                    <a href="{{tests.tests[j+i*limit]}}">
+                    <a href="{{test_list[j+i*limit]}}">
                         <div class="test">
-                        {{tests.tests[j+i*limit]}} 
+                        {{test_list[j+i*limit]}} 
                         </div>
                     </a>
                 {% endfor %}
                 </div>
         {% endfor %}
-        {% if tests.tests|length % limit != 0 %}
+        {% if test_list|length % limit != 0 %}
             <div class="object_container">
-                {% for i in range(tests.tests|length % limit) %}
-                    <a href="{{tests.tests[i+len]}}">
+                {% for i in range(test_list|length % limit) %}
+                    <a href="{{test_list[i+len]}}">
                         <div class="test">
-                        {{tests.tests[i+len]}} 
+                        {{test_list[i+len]}} 
                         </div>
                     </a>
                 {% endfor %}
