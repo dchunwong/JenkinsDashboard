@@ -9,22 +9,23 @@ $(document).ready(function() {
         placeholder: "Select a Job",
         dropdownAutoWidth: autoWidth
     });
+    
     $("#buildselect").select2({
         placeholder: "Select a Build",
         dropdownAutoWidth: autoWidth,
         allowClear: true,
         ajax:{
             url: function(){
-                return "/api/job/"+$("#jobselect").val()+"/builds"
+                return "/api/job/"+$("#jobselect").val()+"/builds";
             },
             dataType: "json",
             data: function(term){
-                return {q:term}
+                return {q:term};
             },
             results: function(data){
-                temp = {results:[]}
+                temp = {results:[]};
                 for(var i=0; i < data.results.length; i++){
-                    build = data.results[i].toString()
+                    build = data.results[i].toString();
                     temp.results.push({id:build, text:build});
                 }
                 return temp
@@ -42,10 +43,10 @@ $(document).ready(function() {
             },
             dataType: "json",
             data: function(term){
-                return {q:term}
+                return {q:term};
             },
             results: function(data){
-                temp = {results:[]}
+                temp = {results:[]};
                 for(var i=0; i < data.results.length; i++){
                     temp.results.push({id:data.results[i], text:data.results[i]});
                 }
@@ -80,12 +81,6 @@ var toggleSelects = function(){
         $("#testselect").select2("enable", true);
         $("#buildselect").select2("enable", true);
     }
-}
-var grabTests = function(){
-    var value = $("#jobselect").val();
-    $.getJSON("/api/job/"+value, function(data){
-        $("#testselect").select2();
-    })
 }
 
 var disableOther = function(el1, el2){

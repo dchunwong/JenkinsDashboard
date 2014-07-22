@@ -1,37 +1,43 @@
 import flask as f
 from flask import Flask, render_template, request, redirect, abort, flash
-from scraper import scraper as scrape
+from scraper import scraper
+from scraper.multiscraper import MultiScraper
 import time
+import itertools
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 offline = False
 
-
 def get_filtered_jobs(offline):
     jobs = scrape.fetch_jobs(offline)
+    # jobs= [scraper.fetch_jobs(offline) for scraper in scrapers]
+    # jobs = reduce(lambda x, y: {'current': x['current']+y['current'], 'legacy': x['legacy']+y['legacy']}, jobs)
     current = sorted([job for job in jobs['current'] if 'download' not in job and 'perf' not in job])
     legacy = sorted([job for job in jobs['legacy'] if 'download' not in job and 'perf' not in job])
     return {"current":current, "legacy":legacy}
 
 @app.route('/')
 def display_search():
-
     return render_template('search.html', jobs = get_filtered_jobs(offline))
 
 @app.route('/job/<job>/')
 def redirect_job(job):
     return redirect('job/%s/tests' % job)
 
-@app.route('/job/<job>/tests/')
-def display_tests(job):
-    return render_template('list_tests.html', jobs=get_filtered_jobs(offline), test_list = sorted(scrape.list_tests(job, offline)), job=job)
-    
 @app.route('/job/<job>/<build>/')
 def display_build(job, build):
     if(scrape.fetch_build_html(job, build, offline)):
-        return render_template('html_report.html',job=job, build=build, jobs = get_filtered_jobs(offline))
+        return render_template('html_report.html',
+                               job=job,
+                               build=build, jobs = get_filtered_jobs(offline),
+                               path=scrape.which_scraper(job, offline).path.split('static')[1]
+                               )
     else:
         return "HTML Report doesn't exist for this build :("
+
+@app.route('/job/<job>/tests/')
+def display_tests(job):
+    return render_template('list_tests.html', jobs=get_filtered_jobs(offline), test_list = sorted(scrape.list_tests(job, offline)), job=job)
 
 @app.route('/job/<job>/tests/<test>/')
 def display_test_stats(job, test):
@@ -77,8 +83,10 @@ def get_tests(job):
 @app.route('/api/job/<job>/builds')
 def get_builds(job):
     q = request.args['q']
-    return f.jsonify({"results":[build for build in scrape.get_retrieved(job) if q in str(build)]})
+    return f.jsonify({"results":[build for build in scrape.get_local_builds(job) if q in str(build)]})
 
 if __name__ == '__main__':
+    scrape = MultiScraper(scraper.JenkinsScraper('http://selenium.qa.mtv2.mozilla.com:8080/view/B2G/', 'static/Reports/selenium'),
+                          scraper.JenkinsScraper('http://jenkins1.qa.scl3.mozilla.com/', 'static/Reports/jenkins1'))
     scrape.generate_build_cache(offline)
     app.run(host='0.0.0.0', port=3030, debug=True, use_reloader=False)
