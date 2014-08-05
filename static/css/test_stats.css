@@ -1,19 +1,37 @@
-a.Passed{
+.Passed{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color: green;
 }
-a.Skipped{
+.Skipped{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color: darkKhaki;
 }
-a.Error{
+.Error{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color: firebrick;
 }
-a.Failure{
+.Failure{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color: salmon;
 }
-a.Expected.Failure{
+.Expected.Failure{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color: DarkOrange;
 }
-a.Unexpected.Pass{
+.Unexpected.Pass{
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
     color:SteelBlue;
 }
 #legend_container{
@@ -65,3 +83,30 @@ a.Unexpected.Pass{
 #preview{
     left:40px;
 }
+#resulttable .tablehead{
+    background: whitesmoke;
+}
+#resulttable{
+    background: whitesmoke;
+    margin: 5px;
+}
+#resulttable td{
+    background: white;
+    padding: 5px;
+    color: dimgrey;
+}
+
+#resulttable td a{
+    text-decoration: underline;
+    color: dimgrey;
+}
+#resulttable .collapse{
+    max-width: 75px;
+}
+.xlabel{
+    text-align: center;
+    margin: 0px;
+    color: dimgrey;
+    margin-bottom: 5px;
+}
+

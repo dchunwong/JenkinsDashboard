@@ -4,9 +4,10 @@ from scraper import scraper
 from scraper.multiscraper import MultiScraper
 import time
 import itertools
+import json
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-offline = False
+offline = False 
 
 def get_filtered_jobs(offline):
     jobs = scrape.fetch_jobs(offline)
@@ -42,7 +43,7 @@ def display_tests(job):
 @app.route('/job/<job>/tests/<test>/')
 def display_test_stats(job, test):
     test_info = scrape.fetch_test_data(job, test, job in scrape.fetch_jobs(offline)['legacy'])
-    return render_template('test_stats.html', jobs=get_filtered_jobs(offline), tests = test_info, clearDate=1)
+    return render_template('test_stats.html', jobs=get_filtered_jobs(offline), tests = list(reversed(test_info)), clearDate=1)
 
 @app.route('/job/<job>/tests/<test>/<year>/<month>/<day>/')
 def display_test_day_stats(job, test, year, month, day):
@@ -52,7 +53,7 @@ def display_test_day_stats(job, test, year, month, day):
         date = time.localtime(test['date'])
         if date.tm_year == int(year) and date.tm_mon == int(month) and date.tm_mday == int(day):
             tests.append(test)
-    return render_template('test_stats.html', jobs=get_filtered_jobs(offline), tests = [test for test in tests], clearDate = 0)
+    return render_template('test_stats.html', jobs=get_filtered_jobs(offline), tests = list(reversed([test for test in tests])), clearDate = 0)
 
 @app.route('/search/', methods=['POST'])
 def fetch():
@@ -72,6 +73,7 @@ def fetch():
 
 @app.route('/refreshing/', methods=['GET'])
 def refresh():
+    offline = scrape.check_offline()
     scrape.generate_build_cache(offline)
     return redirect('/')
 
@@ -85,8 +87,19 @@ def get_builds(job):
     q = request.args['q']
     return f.jsonify({"results":[build for build in scrape.get_local_builds(job) if q in str(build)]})
 
+@app.after_request
+def add_headers(response):
+    response.headers['Cache-Control'] = 'public, max-age=2592000'
+    return response
+
+@app.add_template_filter
+def format_date(num):
+    date = time.localtime(num)
+    return time.strftime('%d %b %Y %X', date)
+
 if __name__ == '__main__':
     scrape = MultiScraper(scraper.JenkinsScraper('http://selenium.qa.mtv2.mozilla.com:8080/view/B2G/', 'static/Reports/selenium'),
                           scraper.JenkinsScraper('http://jenkins1.qa.scl3.mozilla.com/', 'static/Reports/jenkins1'))
+    offline = scrape.check_offline()
     scrape.generate_build_cache(offline)
     app.run(host='0.0.0.0', port=3030, debug=True, use_reloader=False)

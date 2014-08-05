@@ -81,7 +81,7 @@ function makeGraph(data, width, height, clearDate){
     if(clearDate){
         renderer = "bar";
     }else{
-        renderer = "area"
+        renderer = "area";
     }
     var graph = new Rickshaw.Graph({
         element: document.querySelector("#chart"),
@@ -95,7 +95,7 @@ function makeGraph(data, width, height, clearDate){
         series: [{
             name: "Passes",
             data: keysToXY(results.passes),
-            color: "SeaGreen"
+            color: "seagreen",
         }, {
             name: "Fails",
             data: keysToXY(results.fails),
@@ -107,15 +107,15 @@ function makeGraph(data, width, height, clearDate){
         }, {
             name: "Skips",
             data: keysToXY(results.skips),
-            color: "darkKhaki"
+            color: "darkkhaki"
         }, {
             name: "X-Fails",
             data: keysToXY(results.xfails),
-            color: "DarkOrange"
+            color: "darkorange"
         }, {
             name: "UX-Passes",
             data: keysToXY(results.uxpass),
-            color: "SteelBlue"
+            color: "steelblue"
         }]
     });
     var x_axis = new Rickshaw.Graph.Axis.Time({
@@ -154,11 +154,11 @@ function makeGraph(data, width, height, clearDate){
     // element: document.getElementById('preview'),
     // } );
     if(clearDate){
-    $('#chart').on('click',
-        function() {
-            var s = new Date($("#chart .detail .x_label").text().split('Build(s)')[0]);
-            window.location = s.getFullYear()+"/"+(s.getMonth()+1)+"/"+s.getDate();
-        });
+        $('#chart').on('click',
+            function() {
+                var s = new Date($("#chart .detail .x_label").text().split('Build(s)')[0]);
+                window.location = s.getFullYear()+"/"+(s.getMonth()+1)+"/"+s.getDate();
+            });
     }else{
         $('#chart').on('click',
         function(){

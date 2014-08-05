@@ -3,8 +3,8 @@
 <h1>
     List of tests for {{job}}
 </h1>
-    {% if test_list == 'No tests exist' %}
-        {{test_list}}
+    {% if test_list|length == 0 %}
+        No tests exist for {{job}} 
     {% else %}
     {% set limit = 15 %}
         {% set len= (((test_list|length)/limit)|round(method='floor')|int) %}

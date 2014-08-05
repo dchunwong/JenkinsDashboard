@@ -1,3 +1,9 @@
+#container{
+    padding-left: 10px;
+}
+.job{
+    background-color: seagreen;
+}
 .job, .test{
     padding: 10px;
     margin: 2.5px;
@@ -6,15 +12,12 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-.job{
-    background-color: seagreen;
-}
-.legacyjob{
-    background-color: grey;
-    opacity: .8;
-}
 .test{
     background-color: SteelBlue;
+}
+.legacyjob{
+    background-color: dimgrey;
+    opacity: .8;
 }
 
 .object_container{
@@ -23,34 +26,49 @@
     vertical-align: top;
     max-width: 325px;
 }
-#banner{
-    background-color: whitesmoke;
-    color: grey;
-    border-bottom: 3px solid;
-    border-color: gainsboro;
+.banner{
+    background-color: #303030;
+    color: white;
+    border-bottom: 2px solid;
+    border-color: #E66000;
     font-size: 1em;
     width: 100%;
+    position: fixed;
+    height: 50px;
+    z-index: 100;
+}
+.banner.spacer{
+    position: static;
+    visibility: hidden;
 }
 .bannerbutton{
     border-right: 1px solid;
     display: inline-block;
     padding: 15px;
-    border-color: gainsboro;
-    color: grey;
+    border-color: #E66000;
+    color: white;
     font-size: 1em;
+    height: 100%;
+    box-sizing: border-box;
 }
-.bannerbutton:hover{
-    color: #505050;
-    background-color: gainsboro;
+
+.select2-choice > span{
+    color: grey;
+}
+.group_container{
+    display:inline-block;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+.bannerbutton.end{
+    border-left: 1px solid;
+    border-color: #E66000;
 }
 button{
     background: none;
     border: none;
-    border-left: 1px solid;
     cursor: pointer;
-}
-button.bannerbutton{
-    padding: 14px;    
 }
 *{
     font-family: sans-serif;
@@ -73,17 +91,20 @@ input{
     border: none;
     padding: 5px;
 }
-#container{
-    padding-left: 10px;
-}
 h1{
     color: dimgrey;
 }
-.group_container{
-    display:inline-block;
-    margin: 0;
-    padding: 0;
-    vertical-align: top;
+
+@media only screen and (max-width: 890px){
+    .banner{
+        height: auto;
+    }
+    .banner.spacer{
+        height: 100px;
+    }
+    .bannerbutton{
+        height: auto;
+    }
 }
 @media only screen and (max-width: 768px){
     .object_container, .group_container, .job, .test, #search{
@@ -98,16 +119,23 @@ h1{
         border:none;
         border-top: 1px solid;
         border-bottom: 1px solid;
-        border-color: gainsboro;
+        border-color: #E66000;
         margin-bottom: 5px;
         text-align: left;
         min-width: 100%;
+        height: auto;
+    }
+    .banner.spacer{
+        display:none;
     }
     .select2-container{
         min-width: 100%;
     }
-}
-
-.select2-choice > span{
-    color: grey;
+    .banner{
+        position: relative;
+        height: auto;
+    }
+    .bannerbutton.end{
+        border-left: none;
+    }
 }

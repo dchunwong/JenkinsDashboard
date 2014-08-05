@@ -5,6 +5,7 @@
 <script>
 var clearDate = {{clearDate}};
 var test_data = [];
+// Generate JSON from test_data
 {% for test_dict in tests %}
     test_data[{{loop.index0}}] = {};
     idx = {{loop.index0}};
@@ -40,6 +41,7 @@ var test_data = [];
 </h1>
 <div id="graph_container">
     <div id="chart_container">
+        <h2 class="xlabel"> Results of {{tests[0].test_list[0].test_name}} Over Time </h2>
         <div id="yaxis"></div>
         <div id="chart"></div>
     </div>
@@ -48,16 +50,114 @@ var test_data = [];
     </span>
     <div id="preview"></div>
 </div>
-<ul>
+<table id="resulttable">
+{% if "gaia_revision" in tests[0].keys() %}
+    <tr id="labelrow">
+        <td class="tablehead"> Build </td>
+        <td class="tablehead"> Results </td>
+        <td class="tablehead"> Build </br> Date </td>
+        <td class="tablehead"> Firmware</br>Date </td>
+        <td class="tablehead"> Firmware</br>Release</td>
+        <td class="tablehead"> Firmware</br>Incremental </td>
+        <td class="tablehead"> Gaia</br>Date </td>
+        <td class="tablehead"> Gaia</br>Revision </td>
+        <td class="tablehead"> Gecko</br>Build </td>
+        <td class="tablehead"> Gecko</br>Revision </td>
+        <td class="tablehead"> Gecko</br>Version </td>
+    </tr>
     {% for test_dict in tests %}
-        {% for test in test_dict.test_list %}
-            <li>
-            <a href="../../{{test_dict.build}}" class="{{test.result}}">
-            {{test_dict.build}}: {{test.result}}
-            </a>
-            </li>
-        {% endfor %}
+        <tr>
+            <td class="build">
+                <a href="/job/{{test_dict.job}}/{{test_dict.build}}">
+                    {{test_dict.build}}
+                </a>
+            </td>
+            <td class="collapse">
+                {% for test in test_dict.test_list %}
+                    <div class="{{test.result}}">
+                    {% if test.result == "Passed" %}
+                        ✔
+                    {% elif test.result == "Skipped" %}
+                        <strong>S</strong>
+                    {% elif test.result == "Failure" %}
+                        ✘
+                    {% elif test.result == "Error" %}
+                        <strong>E</strong>
+                    {% elif test.result == "Expected Failure" %}
+                        <strong>XF</strong>
+                    {% elif test.result == "Unexpected Pass" %}
+                        <strong>UXP</strong>
+                    {% endif %}
+                    </div>
+                {% endfor %}
+            </td>
+            <td class="collapse">
+                {{test_dict.date|format_date}}
+            </td>
+            <td class="collapse">
+                {{test_dict.firmware_date}}
+            </td>
+            <td class="collapse">
+                {{test_dict.firmware_release}}
+            </td>
+            <td>
+                {{test_dict.firmware_incremental}}
+            </td>
+            <td>
+                {{test_dict.gaia_date}}
+            </td>
+            <td>
+                <a href={{test_dict.gaia_revision.link}}>
+                    {{test_dict.gaia_revision.revision}}
+                </a>
+            </td>
+            <td>
+                {{test_dict.gecko_build}}
+            </td>
+            <td>
+                <a href={{test_dict.gecko_revision.link}}>
+                    {{test_dict.gecko_revision.revision}}
+                </a>
+            </td>
+            <td>
+                {{test_dict.gecko_version}}
+            </td>
+        </tr>
     {% endfor %}
-</ul>
+{% else %}
+    <tr>
+        <td class="tablehead"> Build </td>
+        <td class="tablehead"> Results </td>
+    </tr>
+    {% for test_dict in tests %}
+            <tr>
+                <td>
+                    <a href="../../{{test_dict.build}}">
+                        {{test_dict.build}}
+                    </a>
+                </td>
+                <td>
+                {% for test in test_dict.test_list %}
+                        <div class="{{test.result}}">
+                        {% if test.result == "Passed" %}
+                            ✔
+                        {% elif test.result == "Skipped" %}
+                            <strong>S</strong>
+                        {% elif test.result == "Failure" %}
+                            ✘
+                        {% elif test.result == "Error" %}
+                            <strong>E</strong>
+                        {% elif test.result == "Expected Failure" %}
+                            <strong>XF</strong>
+                        {% elif test.result == "Unexpected Pass" %}
+                            <strong>UXP</strong>
+                        {% endif %}
+                        </div>
+                {% endfor %}
+            </td>
+            </tr>
+    {% endfor %}
+{% endif %}
+</table>
 <script src="/js/graphing.js"></script>
 {% endblock %}

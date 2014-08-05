@@ -25,12 +25,19 @@ class JenkinsScraper(object):
                 return cache[temp]
         return memoized
 
-    # Helper method to make a dict out of a 3-item tuple.
-    def _make_test_dict(self, test):
-        return dict(zip(['test_name', 'result', 'duration'], test))
+    def check_offline(self):
+        opener = urllib.FancyURLopener()
+        try:
+            opener.open(self.default)
+        except IOError:
+            return True
+        return False
 
     # return the jobs that have been already fetched and are stored locally
     def get_local_builds(self, job):
+        if not os.path.exists('%s/%s' % (self.path, job)):
+            print '%s/%s' %(self.path, job)
+            return []
         return sorted([int(job.split('.')[0]) for job in os.listdir('%s/%s' % (self.path, job)) if job.split('.')[0].isdigit()])
 
     # Fetch number of builds for a given job
@@ -114,14 +121,17 @@ class JenkinsScraper(object):
         build_dict['date'] = time.mktime(time.strptime(time_text[3]+" "+time_text[5]+" PST", "%d-%b-%Y %H:%M:%S %Z"))
 
         test_table_rows = soup.select('#results-table > #results-table-body > .results-table-row')
+        debug_rows = soup.select('td.debug')
         fields = ['col-name', 'col-result', 'col-duration']
 
         # Generate a list for each test containing test name, result, and duration.
         test_info = [[test.find(attrs={'class':field}).text for field in fields] for test in test_table_rows]
 
         tests = {}
-        for test in [self._make_test_dict(test) for test in test_info]:
+        for index, test in enumerate([dict(zip(['test_name', 'result', 'duration'], test)) for test in test_info]):
             test_name = test['test_name']
+            if test['result'] not in ['Passed', 'Skipped', 'Unexpected Pass']:
+                test['log'] = debug_rows[index].find(attrs={'class':'log'}).text
             if test_name in tests.keys():
                 tests[test_name].append(test)
             else:
@@ -138,7 +148,7 @@ class JenkinsScraper(object):
             else:
                 build_dict[temp[0].text] = temp[1].text
             config_keys.append(temp[0].text)
-        new_keys = ['firmware_date', 'firmware_incremenal', 'firmware_release', 'identifier',
+        new_keys = ['firmware_date', 'firmware_incremental', 'firmware_release', 'identifier',
                     'gaia_date', 'gaia_revision','gecko_build', 'gecko_revision', 'gecko_version']
         for idx, item in enumerate(config_keys):
             build_dict[new_keys[idx]]= build_dict.pop(item, None)
@@ -246,6 +256,7 @@ class JenkinsScraper(object):
 
     #List all the tests for a given job.
     def list_tests(self, job, offline):
+        build = None
         if len(self.get_local_builds(job)) > 0:
             build = self.get_local_builds(job)[-1]
         else:
@@ -253,4 +264,6 @@ class JenkinsScraper(object):
                 if self.fetch_build_html(job, i, offline):
                     build = i
                     break
+        if not build:
+            return []
         return self.make_build_dict(job, build,offline)['tests'].keys()

@@ -6,6 +6,12 @@ class MultiScraper(object):
         assert(reduce(lambda x, y: type(x) == JenkinsScraper, arg))
         self.scrapers = arg
 
+    def check_offline(self):
+        for scraper in self.scrapers:
+            if scraper.check_offline():
+                return True
+        return False
+
     def which_scraper(self, job, offline=False):
         for scraper in self.scrapers:
             jobs = scraper.fetch_jobs(offline)
@@ -14,8 +20,9 @@ class MultiScraper(object):
 
     def get_local_builds(self, job):
         for scraper in self.scrapers:
-            builds = scraper.get_local_builds(job)
-            if builds > 0:
+                builds = scraper.get_local_builds(job)
+                if builds == []:
+                    continue
                 return builds
         return []
 

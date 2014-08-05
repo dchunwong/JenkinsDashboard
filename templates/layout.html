@@ -4,17 +4,17 @@
     <meta content='True' name='HandheldFriendly' />
     <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no; minimum-scale=1;'  name='viewport' />
     <link href="/css/layout.css" rel="stylesheet"></link>
-    <script src="/bower_components/d3/d3.js" charset="utf-8"></script>
-    <script src="/bower_components/rickshaw/rickshaw.js" charset="utf-8"></script>
-    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/d3/d3.min.js" charset="utf-8"></script>
+    <script src="/bower_components/rickshaw/rickshaw.min.js" charset="utf-8"></script>
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <link href="/bower_components/select2/select2.css" rel="stylesheet"/>
-    <script src="/bower_components/select2/select2.js"></script>
-    <script src="/jui/jquery-ui.js"></script>
+    <script src="/bower_components/select2/select2.min.js"></script>
+<!--     <script src="/jui/jquery-ui.js"></script> -->
     <script src="/js/layout.js"></script>
     <link rel="stylesheet" type="text/css" href="/bower_components/rickshaw/rickshaw.css">
 </head>
 <body>
-    <div id="banner">
+    <div class="banner">
     <a href="/">
         <div class="bannerbutton">
             B2G Jenkins Job Dashboard
@@ -36,10 +36,12 @@
         </select>
         <input type="hidden" name="build" id="buildselect"/>
         <input type="hidden" name="test" id="testselect"/>
-        <button type="submit" class="bannerbutton">
+        <button type="submit" class="bannerbutton end">
             Fetch
         </button>
     </form>
+    </div>
+    <div class="banner spacer">
     </div>
 <div id="container">
     {% block body %}
