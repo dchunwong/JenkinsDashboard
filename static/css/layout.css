@@ -107,13 +107,13 @@ h1{
     }
 }
 @media only screen and (max-width: 768px){
-    .object_container, .group_container, .job, .test, #search{
+    .group_container, .job, .test, #search{
         display:block;
         width: 100%;
     }
-    .group_container{
-        width: 100%;
+    .object_container{
         display: block;
+        max-width: 90%
     }
     .bannerbutton{
         border:none;
@@ -137,5 +137,7 @@ h1{
     }
     .bannerbutton.end{
         border-left: none;
+        border-bottom: none;
+        margin-top: 5px;
     }
 }

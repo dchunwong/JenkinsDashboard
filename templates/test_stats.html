@@ -1,5 +1,6 @@
 <link href="/css/test_stats.css" rel="stylesheet" type="text/css"></link>
-<link href="/jui/jquery-ui.css" rel="stylesheet" type="text/css"></link>
+<script src="/js/bower_components/d3/d3.js" charset="utf-8"></script>
+<script src="/js/bower_components/rickshaw/rickshaw.js" charset="utf-8"></script>
 {% extends "layout.html" %}
 {% block body %}
 <script>
@@ -36,6 +37,13 @@ var test_data = [];
     {% endfor %}
 {% endfor %}
 </script>
+<div id="modal_container">
+    <div id="modal_window">
+    <p id="modal_close"><strong> X </strong></p>
+    <hr></hr>        
+    <div id="modal_content"></div>
+    </div>
+</div>
 <h1>
     Test statistics for {{tests[0].test_list[0].test_name}}
 </h1>
@@ -72,21 +80,23 @@ var test_data = [];
                     {{test_dict.build}}
                 </a>
             </td>
-            <td class="collapse">
+            <td class="collapse" data-idx={{loop.index0}}>
                 {% for test in test_dict.test_list %}
-                    <div class="{{test.result}}">
+                    <div class="{{test.result}}" data-idx={{loop.index0}}>
                     {% if test.result == "Passed" %}
                         ✔
                     {% elif test.result == "Skipped" %}
                         <strong>S</strong>
-                    {% elif test.result == "Failure" %}
-                        ✘
-                    {% elif test.result == "Error" %}
-                        <strong>E</strong>
-                    {% elif test.result == "Expected Failure" %}
-                        <strong>XF</strong>
                     {% elif test.result == "Unexpected Pass" %}
                         <strong>UXP</strong>
+                    {% else %}
+                        {% if test.result == "Failure" %}
+                            ✘
+                        {% elif test.result == "Error" %}
+                            <strong>E</strong>
+                        {% elif test.result == "Expected Failure" %}
+                            <strong>XF</strong>
+                        {% endif %}
                     {% endif %}
                     </div>
                 {% endfor %}
@@ -159,5 +169,7 @@ var test_data = [];
     {% endfor %}
 {% endif %}
 </table>
+
 <script src="/js/graphing.js"></script>
+<script src="/js/displayLogs.js"></script>
 {% endblock %}

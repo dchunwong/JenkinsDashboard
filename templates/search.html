@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% set limit = 10 %}
+{% set limit = 7 %}
 {% set curlen= (((jobs.current|length)/limit)|round(method='floor')|int) %}
 {% set leglen= (((jobs.legacy|length)/limit)|round(method='floor')|int) %}
 {% if jobs.current|length > 0 %}
