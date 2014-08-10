@@ -1,13 +1,17 @@
+var baseWidth = 810;
+var baseHeight = 375;
+var scaler = .9;
+
 function countResults(data, clearDate){
-    errors = {};
-    fails = {};
-    passes = {};
-    xfails = {};
-    skips = {};
-    builds = {};
-    uxpass = {};
+    var errors = {};
+    var fails = {};
+    var passes = {};
+    var xfails = {};
+    var skips = {};
+    var builds = {};
+    var uxpass = {};
     for(var i = 0; i < data.length; i++){
-        date = new Date(data[i].date*1000);
+        var date = new Date(data[i].date*1000);
         if(clearDate){
             date.setHours(0,0,0,0);
         }
@@ -28,6 +32,7 @@ function countResults(data, clearDate){
             builds[date] = [];
         }
         builds[date].push(data[i].build);
+        var test_list;
         for(var j = 0; j < data[i].test_list.length; j++){
             test_list = data[i].test_list;
             if(test_list[j].result == "Passed"){
@@ -50,40 +55,37 @@ function countResults(data, clearDate){
             errors: errors,
             skips: skips,
             xfails: xfails,
-            skips: skips,
             uxpass: uxpass,
             builds: builds
         }
 }
 function keysToXY(object){
-    xy = [];
-    keys = Object.keys(object);
+    var xy = [];
+    var key;
+    var keys = Object.keys(object);
     keys.sort();
     for(var i = 0; i < keys.length; i++){
-        key = + keys[i]
-        key = key/1000
-        xy[i] = {x:key, y:object[keys[i]]}
+        key = + keys[i];
+        key = key/1000;
+        xy[i] = {x:key, y:object[keys[i]]};
     }
     return xy
 }
 
-var baseWidth = 810;
-var baseHeight = 375;
-var scaler = .9;
 function makeGraph(data, width, height, clearDate){
     var results = countResults(data, clearDate);
-    var renderer;
+    var renderer, modifier, graph, y_axis, x_axis, hoverDetail, shelving, legend;
     if(window.innerWidth < 866){
-        var modifier = window.innerWidth/866*scaler;   
+        modifier = window.innerWidth/866*scaler;
     } else{
-        var modifier = 1;
+        modifier = 1;
     }
     if(clearDate){
         renderer = "bar";
     }else{
         renderer = "area";
     }
-    var graph = new Rickshaw.Graph({
+    graph = new Rickshaw.Graph({
         element: document.querySelector("#chart"),
         renderer: renderer,
         interpolation: "linear",
@@ -95,7 +97,7 @@ function makeGraph(data, width, height, clearDate){
         series: [{
             name: "Passes",
             data: keysToXY(results.passes),
-            color: "seagreen",
+            color: "seagreen"
         }, {
             name: "Fails",
             data: keysToXY(results.fails),
@@ -118,33 +120,33 @@ function makeGraph(data, width, height, clearDate){
             color: "steelblue"
         }]
     });
-    var x_axis = new Rickshaw.Graph.Axis.Time({
+    x_axis = new Rickshaw.Graph.Axis.Time({
             graph: graph,
             timeFixture: new Rickshaw.Fixtures.Time.Local()
         });
-    var y_axis = new Rickshaw.Graph.Axis.Y( {
+    y_axis = new Rickshaw.Graph.Axis.Y( {
         graph: graph,
         height: baseHeight*modifier,
         orientation: 'left',
         tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
         element: document.getElementById('yaxis')
     } );
-    var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    hoverDetail = new Rickshaw.Graph.HoverDetail( {
         graph: graph,
         xFormatter: function(x) {
             if(clearDate){
-                return new Date(x * 1000).toDateString()+"<br>Build(s): "+ builds[x*1000].toString().replace(/\,/g, " ");
+                return new Date(x * 1000).toDateString()+"<br>Build(s): "+ results.builds[x*1000].toString().replace(/\,/g, " ");
             } else{
-                return new Date(x * 1000).toString()+"<br>Build(s): "+ builds[x*1000].toString().replace(/\,/g, " ")
+                return new Date(x * 1000).toString()+"<br>Build(s): "+ results.builds[x*1000].toString().replace(/\,/g, " ")
             }
         }
     } );
 
-    var legend = new Rickshaw.Graph.Legend( {
+    legend = new Rickshaw.Graph.Legend( {
         graph: graph,
         element: document.getElementById('legend')
     } );
-    var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+    shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
         graph: graph,
         legend: legend
     } );
@@ -153,33 +155,35 @@ function makeGraph(data, width, height, clearDate){
     // graph: graph,
     // element: document.getElementById('preview'),
     // } );
+    var $xLabelSelector = $("#chart .detail .x_label");
     if(clearDate){
         $('#chart').on('click',
             function() {
-                var s = new Date($("#chart .detail .x_label").text().split('Build(s)')[0]);
+                var s = new Date($xLabelSelector.text().split('Build(s)')[0]);
                 window.location = s.getFullYear()+"/"+(s.getMonth()+1)+"/"+s.getDate();
             });
     }else{
         $('#chart').on('click',
         function(){
-            var s = $("#chart .detail .x_label").text().split('Build(s)')[1].split(' ')[1];
-            splitURL = document.URL.split('/')
+            var s = $xLabelSelector.text().split('Build(s)')[1].split(' ')[1];
+            var splitURL = document.URL.split('/');
             window.location = "/job/"+splitURL[splitURL.indexOf('job')+1]+"/"+s
         })
     }
-    return {graph: graph, y: y_axis};
+    return {graph: graph, y: y_axis, x: x_axis, legend: legend, shelving: shelving, hover:hoverDetail};
 }
 var graphStuff = makeGraph(test_data, baseWidth, baseHeight, clearDate);
 
 $(window).resize(function() {
+    var $chartSelector = $('#chart').find('svg');
     if(window.innerWidth > 866){
         if(graphStuff.graph.width < baseWidth){
             graphStuff.graph.configure({
                 width: baseWidth,
                 height: baseHeight
-            })
-            $('#chart svg').attr('width', baseWidth)
-                .attr('height', baseWidth)
+            });
+            $chartSelector.attr('width', baseWidth)
+                .attr('height', baseWidth);
             graphStuff.graph.render();
         }
     }
@@ -192,10 +196,10 @@ $(window).resize(function() {
         graphStuff.graph.configure({
             width: baseWidth*modifier,
             height: baseHeight*modifier
-        })
-        $('#chart svg').attr('width', baseWidth*modifier)
-            .attr('height', baseHeight*modifier)
-        graphStuff.y.height = baseWidth*modifier; 
+        });
+        $chartSelector.attr('width', baseWidth*modifier)
+            .attr('height', baseHeight*modifier);
+        graphStuff.y.height = baseWidth*modifier;
         graphStuff.graph.render();
         graphStuff.y.render();
     }

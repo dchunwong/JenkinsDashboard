@@ -1,22 +1,20 @@
 $(document).ready(function() {
-    var autoWidth;
-    if(window.innerWidth < 768){
-        autoWidth = false;
-    }else{
-        autoWidth = true;
-    }
-    $("#jobselect").select2({
+    var $jobSelector = $("#jobselect");
+    var $buildSelector = $("#buildselect");
+    var $testSelector =  $("#testselect");
+    var autoWidth = window.innerWidth > 768;
+    $jobSelector.select2({
         placeholder: "Select a Job",
         dropdownAutoWidth: autoWidth
     });
-    
-    $("#buildselect").select2({
+
+    $buildSelector.select2({
         placeholder: "Select a Build",
         dropdownAutoWidth: autoWidth,
         allowClear: true,
         ajax:{
             url: function(){
-                return "/api/job/"+$("#jobselect").val()+"/builds";
+                return "/api/job/"+$jobSelector.val()+"/builds";
             },
             dataType: "json",
             data: function(term){
@@ -31,15 +29,15 @@ $(document).ready(function() {
                 return temp
             }
         }
-    })
+    });
 
-    $("#testselect").select2({
+    $testSelector.select2({
         placeholder: "Select a Test",
         dropdownAutoWidth: autoWidth,
         allowClear: true,
         ajax:{
             url: function(){
-                return "/api/job/"+$("#jobselect").val()+"/tests";
+                return "/api/job/"+$jobSelector.val()+"/tests";
             },
             dataType: "json",
             data: function(term){
@@ -57,13 +55,24 @@ $(document).ready(function() {
 
     job_index = document.URL.split('/').indexOf('job');
     if(job_index != -1){
-        $("#jobselect").select2("val", document.URL.split('/')[job_index+1]);
+        $jobSelector.select2("val", document.URL.split('/')[job_index+1]);
     }
+    var toggleSelects = function(){
+        $testSelector.select2("val", "");
+        $buildSelector.select2("val", "");
+        if($jobSelector.val() == ""){
+            $testSelector.select2("enable", false);
+            $buildSelector.select2("enable", false);
+        } else{
+            $testSelector.select2("enable", true);
+            $buildSelector.select2("enable", true);
+        }
+    };
     toggleSelects();
 
-    $("#jobselect").on("change", toggleSelects);
-    $("#buildselect").on("change", function(){disableOther('#buildselect', '#testselect')});
-    $("#testselect").on("change", function(){disableOther('#testselect', '#buildselect')});
+    $jobSelector.on("change", toggleSelects);
+    $buildSelector.on("change", function(){disableOther('#buildselect', '#testselect')});
+    $testSelector.on("change", function(){disableOther('#testselect', '#buildselect')});
     $("#search").keypress(function(event){
         if(event.key == "Enter"){
             $("#search").submit()
@@ -71,17 +80,6 @@ $(document).ready(function() {
     })
 });
 
-var toggleSelects = function(){
-    $("#testselect").select2("val", "");
-    $("#buildselect").select2("val", "");
-    if($("#jobselect").val() == ""){
-        $("#testselect").select2("enable", false);
-        $("#buildselect").select2("enable", false);
-    } else{
-        $("#testselect").select2("enable", true);
-        $("#buildselect").select2("enable", true);
-    }
-}
 
 var disableOther = function(el1, el2){
     if($(el1).val() != ""){
@@ -90,4 +88,4 @@ var disableOther = function(el1, el2){
     } else{
         $(el2).select2("enable", true);
     }
-}
+};

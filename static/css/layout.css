@@ -6,7 +6,7 @@
 }
 .job, .test{
     padding: 10px;
-    margin: 2.5px;
+    margin: 3px;
     font-family: sans-serif;
     color: white;
     text-overflow: ellipsis;
@@ -25,6 +25,12 @@
     margin-bottom: 5px;
     vertical-align: top;
     max-width: 325px;
+}
+.group_container{
+    display:inline-block;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
 }
 .banner{
     background-color: #303030;
@@ -51,19 +57,13 @@
     height: 100%;
     box-sizing: border-box;
 }
-
-.select2-choice > span{
-    color: grey;
-}
-.group_container{
-    display:inline-block;
-    margin: 0;
-    padding: 0;
-    vertical-align: top;
-}
 .bannerbutton.end{
     border-left: 1px solid;
     border-color: #E66000;
+}
+.select2-choice > span{
+    color: grey;
+    display: inline-block;
 }
 button{
     background: none;
@@ -72,12 +72,10 @@ button{
 }
 *{
     font-family: sans-serif;
-
 }
 a{
     text-decoration: none;
 }
-
 body{
     margin: 0;
 }
@@ -125,19 +123,20 @@ h1{
         min-width: 100%;
         height: auto;
     }
+    .bannerbutton.end{
+        border-left: none;
+        border-bottom: none;
+        margin-top: 5px;
+    }
+    .banner{
+        position: relative;
+        height: auto;
+    }
     .banner.spacer{
         display:none;
     }
     .select2-container{
         min-width: 100%;
     }
-    .banner{
-        position: relative;
-        height: auto;
-    }
-    .bannerbutton.end{
-        border-left: none;
-        border-bottom: none;
-        margin-top: 5px;
-    }
+
 }
