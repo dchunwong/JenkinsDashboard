@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib
 import os
-import shelve
 import time
 import json
 
@@ -17,6 +16,8 @@ class JenkinsScraper(object):
         self.default = default
         self.path = path
         self.filters = filters
+        self.offline = self.is_offline
+        self.jobs = self.fetch_jobs()
 
     # check if scraper can access default
     @property
@@ -44,8 +45,8 @@ class JenkinsScraper(object):
                        if job.split('.')[0].isdigit()])
 
     # Fetch number of builds for a given job
-    def _get_latest_build_number(self, job, offline=False):
-        if offline:
+    def _get_latest_build_number(self, job):
+        if self.offline or job in self.jobs['legacy']:
             if not len(self.get_local_builds(job)):
                 return 0
             return self.get_local_builds(job)[-1]
@@ -61,7 +62,8 @@ class JenkinsScraper(object):
             return int(build_num)
 
     # Fetch the HTML Report of a Job build
-    def fetch_build_html(self, job, build, offline=False):
+    def fetch_build_html(self, job, build):
+        legacy = job in self.jobs['legacy']
         self._setup_job_dir(job)
         skip = open('%s/%s/skip.txt' % (self.path, job), 'r+')
         skipped = skip.read().split('\n')
@@ -71,7 +73,7 @@ class JenkinsScraper(object):
         elif os.path.exists('%s/%s/HTML/%s.html' % (self.path, job, build)):
             # print '%s:%s Already Fetched!' % (job, build)
             return True
-        elif offline:
+        elif self.offline or legacy:
             # print 'No HTML Report for %s:%s! Skipping...' % (job, str(build))
             skip.write(str(build)+'\n')
             return False
@@ -94,11 +96,11 @@ class JenkinsScraper(object):
             return True
 
     #Create a dict with relevant build info if available
-    def make_build_dict(self, job, build, offline=False, check_exists=True):
+    def make_build_dict(self, job, build, check_exists=True):
         html_path = self.path + '/' + job + '/HTML/' + str(build) + '.html'
         json_path = self.path + '/' + job + '/JSON/' + str(build) + '.json'
         if check_exists:
-            if not self.fetch_build_html(job, build, offline):
+            if not self.fetch_build_html(job, build):
                 return
 
         if os.path.exists(json_path):
@@ -153,7 +155,7 @@ class JenkinsScraper(object):
         return build_dict
 
     # Fetch all build HTML Reports for a given job.
-    def fetch_all_build_reports(self, job):
+    def _fetch_all_build_reports(self, job):
         self._setup_job_dir(job)
         latest = self._get_latest_build_number(job)
         skip = open('%s/%s/skip.txt' % (self.path, job), 'r+')
@@ -170,23 +172,23 @@ class JenkinsScraper(object):
 
     # For a given job, generate a build_dict for each build
     # Tries to take advantage of caching to reduce number of file reads
-    def _create_all_build_dicts(self, job, offline=False):
+    def _create_all_build_dicts(self, job):
         self._setup_job_dir(job)
-        latest = self._get_latest_build_number(job, offline)
+        latest = self._get_latest_build_number(job)
         if latest < 1:
             return False
         skip = open('%s/%s/skip.txt' % (self.path, job), 'r+')
         skipped = skip.read().split('\n')
         fetched = self.get_local_builds(job)
         for i in xrange(1, latest+1):
-            if str(i) in skipped or (offline and i not in fetched):
+            if str(i) in skipped or (self.offline and i not in fetched):
             #    print 'No HTML Report for %s:%s! Skipping...' % (job, str(i))
                 continue
             if i in fetched:
             #    print '%s:%s Already Fetched!' % (job, i)
-                self.make_build_dict(job, i, offline, False)
+                self.make_build_dict(job, i, False)
             else:
-                self.make_build_dict(job, i, offline, True)
+                self.make_build_dict(job, i, True)
 
     # Filter a build_dict to return only relevant test
     def _extract_test_info(self, build_dict, test_name):
@@ -198,16 +200,16 @@ class JenkinsScraper(object):
         return test_info
 
     # Retrieve all relevant test_dicts for a job
-    def fetch_test_data(self, job, test_name, offline=False):
-        latest = self._get_latest_build_number(job, offline)
-        builds = [self.make_build_dict(job, x, offline) for x in xrange(1, latest + 1)]
+    def fetch_test_data(self, job, test_name):
+        latest = self._get_latest_build_number(job)
+        builds = [self.make_build_dict(job, x) for x in xrange(1, latest + 1)]
         builds = [self._extract_test_info(build, test_name) for build in builds
                   if build is not None and test_name in build['tests'].keys()]
         return builds 
 
     # Return all jobs available online and locally. If offline mode all local jobs are 'Legacy'
-    def fetch_jobs(self, offline=False):
-        if offline:
+    def fetch_jobs(self):
+        if self.offline:
             return {'current': [], 'legacy': [job for job in os.listdir(self.path) if job[0] != '.' or '.txt' in job]}
         all_jobs = []
         url = self.default + ''
@@ -224,18 +226,18 @@ class JenkinsScraper(object):
                 }
 
     # Prebuild the cache by checking all available jobs.
-    def generate_build_cache(self, offline=False):
-        jobs = self.fetch_jobs(offline)
+    def generate_build_cache(self):
+        jobs = self.fetch_jobs()
         for job in jobs['current']:
             if any(filter in job for filter in self.filters):
                 continue
             print job
-            self._create_all_build_dicts(job, offline)
+            self._create_all_build_dicts(job)
         for job in jobs['legacy']:
             if any(filter in job for filter in self.filters):
                 continue
             print job
-            self._create_all_build_dicts(job, True)
+            self._create_all_build_dicts(job)
         print "Cached:"
         print 'Current:'
         for job in jobs['current']:
@@ -251,18 +253,21 @@ class JenkinsScraper(object):
             if any(filter in job for filter in self.filters):
                 continue
             else:
-                self.fetch_all_build_reports(job)
+                self._fetch_all_build_reports(job)
 
     #List all the tests for a given job.
-    def list_tests(self, job, offline):
+    def list_tests(self, job):
         build = None
         if len(self.get_local_builds(job)) > 0:
             build = self.get_local_builds(job)[-1]
         else:
-            for i in range(self._get_latest_build_number(job, offline)):
-                if self.fetch_build_html(job, i, offline):
+            for i in range(self._get_latest_build_number(job)):
+                if self.fetch_build_html(job, i):
                     build = i
                     break
         if not build:
             return []
-        return self.make_build_dict(job, build, offline)['tests'].keys()
+        return self.make_build_dict(job, build)['tests'].keys()
+
+    def refresh_jobs(self):
+        self.jobs = self.fetch_jobs()

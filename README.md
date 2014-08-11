@@ -22,17 +22,13 @@ The JenkinsScraper takes in various parameters:
 - `path`: This will be the default path the scraper stores the HTML and JSON files.
 - `filters`: A list of strings that will be used to filter out job names that do not have HTML reports. e.g. 'perf' or 'download'.
 
-## Offline Parameter
-
-The `offline` parameter is referenced throughout the functions. It determines whether or not the scraper will ping the server or not. Most often if offline is True it will simply fall back upon local files.
-
 ## JenkinsScraper Methods
 
 - `_setup_job_dir(self, job)` :Takes in a job, and will check if the proper directory paths exist for the given job as well as a `skip.txt`
 - `get_local_builds(self, job): Will return the build numbers of the given job that exist locally on the server.
-- `_get_latest_build_number(self, job, offline)`: Will ping the server, if connected, and get the latest build number for the given job, else return the latest build number stored locally.
-- `fetch_build_html(self, job, build, offline)`: This will get and store the html report of a given build.
-- `make_build_dict(self, job, build, offline, check_exists)`: if `check_exists` is true it will check if a HTML Report exists for a given job and build combo, else it will assume it exists. If a JSON of the given combo already exists it will simply return that. It will take the local HTML report and scrape it of relevant B2G configuration info, test results, and other useful information. Currently it does not store the screenshots. The resulting dictionary has the following structure:
+- `_get_latest_build_number(self, job)`: Will ping the server, if connected, and get the latest build number for the given job, else return the latest build number stored locally.
+- `fetch_build_html(self, job, build)`: This will get and store the html report of a given build.
+- `make_build_dict(self, job, build, check_exists)`: if `check_exists` is true it will check if a HTML Report exists for a given job and build combo, else it will assume it exists. If a JSON of the given combo already exists it will simply return that. It will take the local HTML report and scrape it of relevant B2G configuration info, test results, and other useful information. Currently it does not store the screenshots. The resulting dictionary has the following structure:
 ```
 {
     "build": buildno,
@@ -60,9 +56,10 @@ The `offline` parameter is referenced throughout the functions. It determines wh
 ```
 It saves this as a JSON and returns the resulting dictionary as well.
 - `fetch_all_build_reports(self, job)`: For a given job will try and retrieve all HTML reports from 1 to the latest build.
-- `_create_all_build_dicts(self, job, offline)`: Will rcreate all build dictionaries fora  given job and all its builds. Used for creating the JSON cache.
+- `_create_all_build_dicts(self, job)`: Will rcreate all build dictionaries fora  given job and all its builds. Used for creating the JSON cache.
 - `_extract_test_info`(self, build_dict, test_name): Used to pare down a build dictionary to only the relevant `test_name`. Replaces `tests` field with just `test_list`.
-- `fetch_test_data(self, job, test_name, offline)`: Will retrieve the relevant build dictionaries pared down to only the relevant tests.
-- `fetch_jobs(self, offline)`: Return a combination of all local and online jobs in a list.
-- `generate_build_cache(self, offline)`: Will generate the JSON's for all jobs and builds. 
+- `fetch_test_data(self, job, test_name)`: Will retrieve the relevant build dictionaries pared down to only the relevant tests.
+- `fetch_jobs(self)`: Return a combination of all local and online jobs in a list.
+- `generate_build_cache(self)`: Will generate the JSON's for all jobs and builds. 
+- `refresh_jobs`: Will refresh `test.jobs`
 
