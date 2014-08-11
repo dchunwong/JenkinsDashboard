@@ -16,9 +16,9 @@ The `JenkinsScraper` and `MultiScraper` classes found in the scraper module do t
 
 The MultiScraper most of the methods of a `JenkinsScraper`. It takes in mulitple `JenkinsScraper`'s as its arguments. Its purpose is to abstract away multiple scrapers and act as a single scraper with its methods.
 
-The JenkinsScraper takes in various parameters:
+The JenkinsScraper takes in various initialization parameters:
 
-- `default`: This is the base URL that will be scraped from. It should be the list of jobs that are relevant to what you are interested in scraping.
+- `baseurl`: This is the base URL that will be scraped from. It should be the list of jobs that are relevant to what you are interested in scraping.
 - `path`: This will be the default path the scraper stores the HTML and JSON files.
 - `filters`: A list of strings that will be used to filter out job names that do not have HTML reports. e.g. 'perf' or 'download'.
 

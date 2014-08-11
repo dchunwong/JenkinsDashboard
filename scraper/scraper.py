@@ -12,8 +12,8 @@ import json
 
 
 class JenkinsScraper(object):
-    def __init__(self, default, path, filters=None):
-        self.default = default
+    def __init__(self, baseurl, path, filters=None):
+        self.baseurl = baseurl
         self.path = path
         if filters is None:
             self.filters = []
@@ -26,7 +26,7 @@ class JenkinsScraper(object):
     @property
     def is_offline(self):
         try:
-            urllib.urlopen(self.path)
+            urllib.urlopen(self.baseurl)
         except IOError:
             return True
         return False
@@ -55,7 +55,7 @@ class JenkinsScraper(object):
                 return 0
             return self.get_local_builds(job)[-1]
         else:
-            base_url = self.default+'job/'
+            base_url = self.baseurl+'job/'
             opener = urllib.FancyURLopener()
             handle = opener.open(base_url+job+'/')
             report = handle.read()
@@ -82,7 +82,7 @@ class JenkinsScraper(object):
             skip.write(str(build)+'\n')
             return False
         else:
-            base_url = self.default+'job/'
+            base_url = self.baseurl+'job/'
             base_suffix = '/HTML_Report/index.html'
             opener = urllib.FancyURLopener()
             handle = opener.open(base_url+job+'/'+str(build)+base_suffix)
@@ -216,7 +216,7 @@ class JenkinsScraper(object):
         if self.offline:
             return {'current': [], 'legacy': [job for job in os.listdir(self.path) if job[0] != '.' or '.txt' in job]}
         all_jobs = []
-        url = self.default + ''
+        url = self.baseurl + ''
         opener = urllib.FancyURLopener()
         handle = opener.open(url)
         report = handle.read()
