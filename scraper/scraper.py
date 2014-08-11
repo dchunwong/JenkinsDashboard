@@ -71,7 +71,7 @@ class JenkinsScraper(object):
         self._setup_job_dir(job)
         skip = open('%s/%s/skip.txt' % (self.path, job), 'r+')
         skipped = skip.read().split('\n')
-        if build in skipped:
+        if str(build) in skipped:
             # print 'No HTML Report for %s:%s! Skipping...' % (job, str(build))
             return False
         elif os.path.exists('%s/%s/HTML/%s.html' % (self.path, job, build)):

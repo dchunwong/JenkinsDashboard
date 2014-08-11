@@ -2,3 +2,4 @@ static/Reports/*
 scraping outline
 data/*
 .idea
+.DS_Store

@@ -85,6 +85,9 @@
 #resulttable .collapse{
     max-width: 75px;
 }
+#resulttable .break{
+    word-break: break-all;
+}
 .xlabel{
     text-align: center;
     color: dimgrey;
