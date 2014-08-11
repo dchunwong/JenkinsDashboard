@@ -155,17 +155,17 @@ function makeGraph(data, width, height, clearDate){
     // graph: graph,
     // element: document.getElementById('preview'),
     // } );
-    var $xLabelSelector = $("#chart .detail .x_label");
+    var xLabelSelector = "#chart .detail .x_label";
     if(clearDate){
         $('#chart').on('click',
             function() {
-                var s = new Date($xLabelSelector.text().split('Build(s)')[0]);
+                var s = new Date($(xLabelSelector).text().split('Build(s)')[0]);
                 window.location = s.getFullYear()+"/"+(s.getMonth()+1)+"/"+s.getDate();
             });
     }else{
         $('#chart').on('click',
         function(){
-            var s = $xLabelSelector.text().split('Build(s)')[1].split(' ')[1];
+            var s = $(xLabelSelector).text().split('Build(s)')[1].split(' ')[1];
             var splitURL = document.URL.split('/');
             window.location = "/job/"+splitURL[splitURL.indexOf('job')+1]+"/"+s
         })

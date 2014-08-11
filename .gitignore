@@ -1,3 +1,4 @@
 static/Reports/*
 scraping outline
-data/build_cache
+data/*
+.idea

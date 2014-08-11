@@ -1,22 +1,28 @@
 from scraper import JenkinsScraper
 import itertools
 
+# The multiscraper abstracts away multiple scrapers into acting like a single 
+# While a single scraper can only have a single baseurl, the multiscraper will
+# act as a single scraper with the same commands and handle deciding which scraper is chosen.
+
+
 class MultiScraper(object):
     def __init__(self, *arg):
         assert(reduce(lambda x, y: type(x) == JenkinsScraper, arg))
         self.scrapers = arg
-
-    def check_offline(self):
-        for scraper in self.scrapers:
-            if scraper.check_offline():
-                return True
-        return False
 
     def which_scraper(self, job, offline=False):
         for scraper in self.scrapers:
             jobs = scraper.fetch_jobs(offline)
             if job in jobs['current'] or job in jobs['legacy']:
                 return scraper
+
+    @property
+    def is_offline(self):
+        for scraper in self.scrapers:
+            if scraper.is_offline:
+                return True
+        return False
 
     def get_local_builds(self, job):
         for scraper in self.scrapers:
@@ -51,5 +57,3 @@ class MultiScraper(object):
     def list_tests(self, job, offline=False):
         scraper = self.which_scraper(job, offline)
         return scraper.list_tests(job, offline)
-
-
