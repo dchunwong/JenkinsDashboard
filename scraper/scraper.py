@@ -29,18 +29,18 @@ class JenkinsScraper(object):
 
     # create the necessary directories
     def _setup_job_dir(self, job):
-        if not os.path.exists('%s/%s' % (self.path, job)):
-            os.mkdir('%s/%s' % (self.path, job))
-
+        if not os.path.exists('%s/%s/HTML' % (self.path, job)):
+            os.mkdir('%s/%s/HTML' % (self.path, job))
         if not os.path.exists('%s/%s/skip.txt' % (self.path, job)):
             open('%s/%s/skip.txt' % (self.path, job), 'a').close()
-
+        if not os.path.exists('%s/%s/JSON' %(self.path, job)):
+            os.mkdir('%s/%s/JSON' %(self.path, job))
     # return the jobs that have been already fetched and are stored locally
     def get_local_builds(self, job):
         if not os.path.exists('%s/%s' % (self.path, job)):
             print '%s/%s' % (self.path, job)
             return []
-        return sorted([int(job.split('.')[0]) for job in os.listdir('%s/%s' % (self.path, job))
+        return sorted([int(job.split('.')[0]) for job in os.listdir('%s/%s/HTML' % (self.path, job))
                        if job.split('.')[0].isdigit()])
 
     # Fetch number of builds for a given job
@@ -65,11 +65,10 @@ class JenkinsScraper(object):
         self._setup_job_dir(job)
         skip = open('%s/%s/skip.txt' % (self.path, job), 'r+')
         skipped = skip.read().split('\n')
-        fetched = self.get_local_builds(job)
         if build in skipped:
             # print 'No HTML Report for %s:%s! Skipping...' % (job, str(build))
             return False
-        elif int(build) in fetched:
+        elif os.path.exists('%s/%s/HTML/%s.html' % (self.path, job, build)):
             # print '%s:%s Already Fetched!' % (job, build)
             return True
         elif offline:
@@ -89,24 +88,25 @@ class JenkinsScraper(object):
                 skip.write(str(build)+'\n')
                 return False
 
-            f = open('%s/%s/%s.html' % (self.path, job, build), 'w')
+            f = open('%s/%s/HTML/%s.html' % (self.path, job, build), 'w')
             f.write(report)
             # print '%s:%s Fetched!' % (job, build)
             return True
 
     #Create a dict with relevant build info if available
     def make_build_dict(self, job, build, offline=False, check_exists=True):
-        build_path = self.path + '/' + job + '/' + str(build)
+        html_path = self.path + '/' + job + '/HTML/' + str(build) + '.html'
+        json_path = self.path + '/' + job + '/JSON/' + str(build) + '.json'
         if check_exists:
             if not self.fetch_build_html(job, build, offline):
                 return
 
-        if os.path.exists(build_path+'.json'):
-            return json.load(open(build_path+'.json'))
-        
+        if os.path.exists(json_path):
+            return json.load(open(json_path))
+
         build_dict = {'build': build, 'job': job}
 
-        f = open(build_path+'.html', 'r')
+        f = open(html_path, 'r')
         report = f.read()
         soup = BeautifulSoup(report)
         time_text = soup.p.text.split()
@@ -147,7 +147,7 @@ class JenkinsScraper(object):
         for idx, item in enumerate(config_keys):
             build_dict[new_keys[idx]] = build_dict.pop(item, None)
 
-        with open(build_path+'.json', 'wb') as fp:
+        with open(json_path, 'wb') as fp:
             json.dump(build_dict, fp)
 
         return build_dict

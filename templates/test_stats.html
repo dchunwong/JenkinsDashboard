@@ -1,6 +1,7 @@
 <link href="/css/test_stats.css" rel="stylesheet" type="text/css"></link>
-<script src="/js/bower_components/d3/d3.js" charset="utf-8"></script>
-<script src="/js/bower_components/rickshaw/rickshaw.js" charset="utf-8"></script>
+<script src="/js/bower_components/d3/d3.min.js" charset="utf-8"></script>
+<script src="/js/bower_components/rickshaw/rickshaw.min.js" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="/js/bower_components/rickshaw/rickshaw.min.css">
 {% extends "layout.html" %}
 {% block body %}
 <script>
@@ -170,6 +171,5 @@ var test_data = [];
 {% endif %}
 </table>
 
-<script src="/js/graphing.js"></script>
-<script src="/js/displayLogs.js"></script>
+<script src="/js/graphing.min.js"></script>
 {% endblock %}
