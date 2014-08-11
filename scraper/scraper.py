@@ -12,10 +12,13 @@ import json
 
 
 class JenkinsScraper(object):
-    def __init__(self, default, path, filters=[]):
+    def __init__(self, default, path, filters=None):
         self.default = default
         self.path = path
-        self.filters = filters
+        if filters is None:
+            self.filters = []
+        else:
+            self.filters = filters
         self.offline = self.is_offline
         self.jobs = self.fetch_jobs()
 
@@ -34,8 +37,9 @@ class JenkinsScraper(object):
             os.mkdir('%s/%s/HTML' % (self.path, job))
         if not os.path.exists('%s/%s/skip.txt' % (self.path, job)):
             open('%s/%s/skip.txt' % (self.path, job), 'a').close()
-        if not os.path.exists('%s/%s/JSON' %(self.path, job)):
-            os.mkdir('%s/%s/JSON' %(self.path, job))
+        if not os.path.exists('%s/%s/JSON' % (self.path, job)):
+            os.mkdir('%s/%s/JSON' % (self.path, job))
+
     # return the jobs that have been already fetched and are stored locally
     def get_local_builds(self, job):
         if not os.path.exists('%s/%s' % (self.path, job)):
