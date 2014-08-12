@@ -34,19 +34,19 @@ class JenkinsScraper(object):
     # create the necessary directories
     def _setup_job_dir(self, job):
         if not os.path.exists('%s/%s/HTML' % (self.path, job)):
-            os.mkdir('%s/%s/HTML' % (self.path, job))
+            os.makedirs('%s/%s/HTML' % (self.path, job))
         if not os.path.exists('%s/%s/skip.txt' % (self.path, job)):
             open('%s/%s/skip.txt' % (self.path, job), 'a').close()
         if not os.path.exists('%s/%s/JSON' % (self.path, job)):
-            os.mkdir('%s/%s/JSON' % (self.path, job))
+            os.makedirs('%s/%s/JSON' % (self.path, job))
 
     # return the jobs that have been already fetched and are stored locally
     def get_local_builds(self, job):
         if not os.path.exists('%s/%s' % (self.path, job)):
             print '%s/%s' % (self.path, job)
             return []
-        return sorted([int(job.split('.')[0]) for job in os.listdir('%s/%s/HTML' % (self.path, job))
-                       if job.split('.')[0].isdigit()])
+        return sorted([int(build.split('.')[0]) for build in os.listdir('%s/%s/HTML' % (self.path, job))
+                       if build.split('.')[0].isdigit()])
 
     # Fetch number of builds for a given job
     def _get_latest_build_number(self, job):
@@ -55,9 +55,8 @@ class JenkinsScraper(object):
                 return 0
             return self.get_local_builds(job)[-1]
         else:
-            base_url = self.baseurl+'job/'
             opener = urllib.FancyURLopener()
-            handle = opener.open(base_url+job+'/')
+            handle = opener.open(self.baseurl + 'job/' + job + '/')
             report = handle.read()
             soup = BeautifulSoup(report)
             build_num = soup.select('#buildHistory .build-row')[0].text.split()[0][1:]
@@ -82,10 +81,9 @@ class JenkinsScraper(object):
             skip.write(str(build)+'\n')
             return False
         else:
-            base_url = self.baseurl+'job/'
             base_suffix = '/HTML_Report/index.html'
             opener = urllib.FancyURLopener()
-            handle = opener.open(base_url+job+'/'+str(build)+base_suffix)
+            handle = opener.open(self.baseurl+'job/'+job+'/'+str(build)+base_suffix)
             report = handle.read()
             soup = BeautifulSoup(report)
 
@@ -130,7 +128,7 @@ class JenkinsScraper(object):
                                       for test in test_info]):
             test_name = test['test_name']
             if test['result'] not in ['Passed', 'Skipped', 'Unexpected Pass']:
-                test['log'] = debug_rows[index].find(attrs={'class': 'log'}).text
+                test['log'] = str(debug_rows[index].find(attrs={'class': 'log'}))
             if test_name in tests.keys():
                 tests[test_name].append(test)
             else:
@@ -152,6 +150,12 @@ class JenkinsScraper(object):
                     'gaia_date', 'gaia_revision', 'gecko_build', 'gecko_revision', 'gecko_version']
         for idx, item in enumerate(config_keys):
             build_dict[new_keys[idx]] = build_dict.pop(item, None)
+
+
+        if job not in self.jobs['legacy']:
+            soup = BeautifulSoup(urllib.FancyURLopener().open(self.baseurl+'job/'+job+'/'+str(build)).read())
+            if len(soup.select('#main-paenl .model-link')):
+                build_dict['device'] = soup.select('#main-panel .model-link')[0].text
 
         with open(json_path, 'wb') as fp:
             json.dump(build_dict, fp)
@@ -193,6 +197,7 @@ class JenkinsScraper(object):
                 self.make_build_dict(job, i, False)
             else:
                 self.make_build_dict(job, i, True)
+
 
     # Filter a build_dict to return only relevant test
     def _extract_test_info(self, build_dict, test_name):

@@ -5,8 +5,6 @@ from scraper.multiscraper import MultiScraper
 import time
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-offline = False
-
 
 # Sometimes the job list will have duplicates.
 def get_filtered_jobs():
@@ -114,7 +112,6 @@ def add_headers(response):
 def format_date(num):
     date = time.localtime(num)
     return time.strftime('%d %b %Y %X', date)
-
 
 if __name__ == '__main__':
     scrape = MultiScraper(scraper.JenkinsScraper('http://selenium.qa.mtv2.mozilla.com:8080/view/B2G/',

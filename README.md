@@ -34,6 +34,7 @@ The JenkinsScraper takes in various initialization parameters:
     "build": buildno,
     "job": job_name,
     "date": daterun,
+    "device": devicename,
     "firmware_date": date,
     "firmware_incremental": incremental,
     "firmware_release": release,

@@ -104,8 +104,12 @@
     border: solid 2px gainsboro;
     overflow: scroll;
 }
-#modal_content{
+#modal_content .log{
     font-family: monospace;
+}
+.log .Error, .log .Failure{
+    font-family: monospace;
+    cursor: auto;
 }
 #modal_close{
     margin: 0;

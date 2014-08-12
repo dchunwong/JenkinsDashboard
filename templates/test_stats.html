@@ -9,33 +9,7 @@ var clearDate = {{clearDate}};
 var test_data = [];
 // Generate JSON from test_data
 {% for test_dict in tests %}
-    test_data[{{loop.index0}}] = {};
-    idx = {{loop.index0}};
-    {% for key, value in test_dict.items() %}
-        {% if 'revision' in key %}
-            test_data[idx].{{key}} = {};
-            {% for subkey, subvalue in value.items() %}
-                test_data[idx].{{key}}.{{subkey}} = "{{subvalue}}";
-            {% endfor %}
-        {% elif key == "test_list" %}
-            test_data[idx].{{key}} = [];
-            {% for test in value %}
-                test_data[idx].{{key}}[{{loop.index0}}] = {};
-                inneridx = {{loop.index0}};
-                {% for subkey, subvalue in test.items() %}
-                    test_data[idx].{{key}}[inneridx].{{subkey}} = "{{subvalue}}";
-                    {% if subkey == "duration" %}
-                        test_data[idx].{{key}}[inneridx].{{subkey}} = + test_data[idx].{{key}}[inneridx].{{subkey}};
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        {% else %}
-            test_data[idx].{{key}} = "{{value}}";
-            if(!isNaN(test_data[idx].{{key}})){
-                test_data[idx].{{key}} = + test_data[idx].{{key}};
-            }
-        {% endif %}
-    {% endfor %}
+    test_data[{{loop.index0 }}] = {{ test_dict|tojson|safe }};
 {% endfor %}
 </script>
 <div id="modal_container">
@@ -64,6 +38,7 @@ var test_data = [];
     <tr id="labelrow">
         <td class="tablehead"> Build </td>
         <td class="tablehead"> Results </td>
+        <td class="tablehead"> Device </td>
         <td class="tablehead"> Identifier</td>
         <td class="tablehead"> Build </br> Date </td>
         <td class="tablehead"> Firmware</br>Date </td>
@@ -102,6 +77,13 @@ var test_data = [];
                     {% endif %}
                     </div>
                 {% endfor %}
+            </td>
+            <td class="collapse device">
+                {% if 'device' in test_dict.keys() %}
+                    {{ test_dict.device }}
+                {% else %}
+                    N/A
+                {% endif %}
             </td>
             <td class="collapse identifier">
                 {{ test_dict.identifier }}
