@@ -34,6 +34,15 @@ def display_build(job, build):
     else:
         return "HTML Report doesn't exist for this build :("
 
+@app.route('/job/<job>/<build>/sparse')
+def display_sparse(job, build):
+    if scrape.fetch_build_html(job, build):
+        return render_template('sparse_report.html',
+                               job=scrape.make_build_dict(job, build),
+                               jobs=get_filtered_jobs()
+                               )
+    else:
+        return "HTML Report doesn't exist for this build :("
 
 @app.route('/job/<job>/tests/')
 def display_tests(job):

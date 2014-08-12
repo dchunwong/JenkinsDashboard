@@ -1,0 +1,92 @@
+<link href="/css/test_stats.css" rel="stylesheet" type="text/css"></link>
+{% extends "layout.html" %}
+{% block body %}
+<h1> Job Report for {{job.job}} #{{job.build}}</h1>
+    {% if "gaia_version" in job.keys()  %}
+    <table>
+        <tr> 
+            <td class="tablehead">Build </td>
+            <td>{{job.build}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Device </td>
+            <td>{{job.device}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Identifier</td>
+            <td>{{job.identifier}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Build </br> Date </td>
+            <td>{{job.date|format_date}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Firmware</br>Date </td>
+            <td>{{job.firmware_date}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Firmware</br>Release</td>
+            <td>{{job.firmware_release}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Firmware</br>Incremental </td>
+            <td>{{job.firmware_incremental}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Gaia</br>Date </td>
+            <td>{{job.gaia_date}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Gaia</br>Revision </td>
+            <td>{{job.gaia_revision}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Gecko</br>Build </td>
+            <td>{{job.gecko_build}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Gecko</br>Revision </td>
+            <td>{{job.gecko_revision}}</td>
+        </tr>
+        <tr> 
+            <td class="tablehead">Gecko</br>Version </td>
+            <td>{{job.gecko_version}}</td>
+        </tr>
+    </table>
+    {% endif %}
+    <table>
+    <tr>
+        <td class="tablehead"> Name </td>
+        <td class="tablehead"> Class </td>
+        <td class="tablehead"> Result </td>
+        <td class="tablehead"> Duration </td>
+    </tr>
+    {% for test in job.tests.keys() %}
+        {% for run in job.tests[test] %}
+            <tr>
+                <td> {{run.test_name}} </td>
+                <td> {{run.class}} </td>
+                <td>
+                    <div class="{{run.result}}" data-idx={{loop.index0}}>
+                    {% if run.result == "Passed" %}
+                        ✔
+                    {% elif run.result == "Skipped" %}
+                        <strong>S</strong>
+                    {% elif run.result == "Unexpected Pass" %}
+                        <strong>UXP</strong>
+                    {% else %}
+                        {% if run.result == "Failure" %}
+                            ✘
+                        {% elif run.result == "Error" %}
+                            <strong>E</strong>
+                        {% elif run.result == "Expected Failure" %}
+                            <strong>XF</strong>
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+{% endblock %}

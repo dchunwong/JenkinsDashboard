@@ -46,6 +46,10 @@ class MultiScraper(object):
         scraper = self.which_scraper(job)
         return scraper.fetch_test_data(job, test_name)
 
+    def make_build_dict(self, job, build):
+        scraper = self.which_scraper(job)
+        return scraper.make_build_dict(job, build)
+
     def generate_build_cache(self):
         for scraper in self.scrapers:
             scraper.generate_build_cache()
