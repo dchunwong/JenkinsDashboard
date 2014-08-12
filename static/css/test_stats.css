@@ -102,7 +102,6 @@
     padding: 10px;
     border-radius: 4px;
     border: solid 2px gainsboro;
-    overflow: scroll;
 }
 #modal_content .log{
     font-family: monospace;

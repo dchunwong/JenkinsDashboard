@@ -87,7 +87,7 @@ class JenkinsScraper(object):
             report = handle.read()
             soup = BeautifulSoup(report)
 
-            if soup.body is not None or 'Not found' in soup.body.text or soup.title.text != 'Test Report':
+            if soup.body is None or 'Not found' in soup.body.text or soup.title.text != 'Test Report':
                 # print 'No HTML Report for %s:%s! Skipping...' % (job, str(build))
                 skip.write(str(build)+'\n')
                 return False
@@ -154,8 +154,8 @@ class JenkinsScraper(object):
 
         if job not in self.jobs['legacy']:
             soup = BeautifulSoup(urllib.FancyURLopener().open(self.baseurl+'job/'+job+'/'+str(build)).read())
-            if len(soup.select('#main-paenl .model-link')):
-                build_dict['device'] = soup.select('#main-panel .model-link')[0].text
+            if len(soup.select('#main-panel > div > div > .model-link')):
+                build_dict['device'] = soup.select('#main-panel > div > div > .model-link')[0].text
 
         with open(json_path, 'wb') as fp:
             json.dump(build_dict, fp)
@@ -214,7 +214,7 @@ class JenkinsScraper(object):
         builds = [self.make_build_dict(job, x) for x in xrange(1, latest + 1)]
         builds = [self._extract_test_info(build, test_name) for build in builds
                   if build is not None and test_name in build['tests'].keys()]
-        return builds 
+        return builds
 
     # Return all jobs available online and locally. If offline mode all local jobs are 'Legacy'
     def fetch_jobs(self):

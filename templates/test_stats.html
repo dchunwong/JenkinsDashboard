@@ -123,8 +123,9 @@ var test_data = [];
     {% endfor %}
 {% else %}
     <tr>
-        <td class="tablehead"> Build </td>
-        <td class="tablehead"> Results </td>
+        <td class="tablehead collapse"> Build </td>
+        <td class="tablehead collapse"> Results </td>
+        <td class="tablehead collapse"> Device</td>
     </tr>
     {% for test_dict in tests %}
             <tr>
@@ -151,6 +152,13 @@ var test_data = [];
                         {% endif %}
                         </div>
                 {% endfor %}
+            </td>
+            <td class="device">
+                {% if 'device' in test_dict.keys() %}
+                    {{ test_dict.device }}
+                {% else %}
+                    N/A
+                {% endif %}
             </td>
             </tr>
     {% endfor %}

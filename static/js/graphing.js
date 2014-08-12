@@ -135,9 +135,9 @@ function makeGraph(data, width, height, clearDate){
         graph: graph,
         xFormatter: function(x) {
             if(clearDate){
-                return new Date(x * 1000).toDateString()+"<br>Build(s): "+ results.builds[x*1000].toString().replace(/\,/g, " ");
+                return new Date(x * 1000).toDateString()+"<br>Build(s): "+ results.builds[x*1000].toString().replace(/\,/g, " ")
             } else{
-                return new Date(x * 1000).toString()+"<br>Build(s): "+ results.builds[x*1000].toString().replace(/\,/g, " ")
+                return new Date(x * 1000).toString()+"<br>Build: "+ results.builds[x*1000].toString().replace(/\,/g, " ")
             }
         }
     } );
