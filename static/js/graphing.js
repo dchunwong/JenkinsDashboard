@@ -165,7 +165,7 @@ function makeGraph(data, width, height, clearDate){
     }else{
         $('#chart').on('click',
         function(){
-            var s = $(xLabelSelector).text().split('Build(s)')[1].split(' ')[1];
+            var s = $(xLabelSelector).text().split('Build')[1].split(' ')[1];
             var splitURL = document.URL.split('/');
             window.location = "/job/"+splitURL[splitURL.indexOf('job')+1]+"/"+s
         })
