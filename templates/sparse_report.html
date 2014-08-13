@@ -1,9 +1,12 @@
 <link href="/css/test_stats.css" rel="stylesheet" type="text/css"></link>
+
 {% extends "layout.html" %}
 {% block body %}
+<script>
+    var job = {{job|tojson|safe}}
+</script>
 <h1> Job Report for {{job.job}} #{{job.build}}</h1>
-    {% if "gaia_version" in job.keys()  %}
-    <table>
+    <table class="resulttable">
         <tr> 
             <td class="tablehead">Build </td>
             <td>{{job.build}}</td>
@@ -12,49 +15,56 @@
             <td class="tablehead">Device </td>
             <td>{{job.device}}</td>
         </tr>
+        {% if "gaia_revision" in job.keys()  %}
         <tr> 
             <td class="tablehead">Identifier</td>
             <td>{{job.identifier}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Build </br> Date </td>
+            <td class="tablehead">Build   Date </td>
             <td>{{job.date|format_date}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Firmware</br>Date </td>
+            <td class="tablehead">Firmware Date </td>
             <td>{{job.firmware_date}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Firmware</br>Release</td>
+            <td class="tablehead">Firmware Release</td>
             <td>{{job.firmware_release}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Firmware</br>Incremental </td>
+            <td class="tablehead">Firmware Incremental </td>
             <td>{{job.firmware_incremental}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Gaia</br>Date </td>
+            <td class="tablehead">Gaia Date </td>
             <td>{{job.gaia_date}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Gaia</br>Revision </td>
-            <td>{{job.gaia_revision}}</td>
+            <td class="tablehead">Gaia Revision </td>
+            <td><a href={{job.gaia_revision.link}}>
+                {{job.gaia_revision.revision}}
+                </a>
+            </td>
         </tr>
         <tr> 
-            <td class="tablehead">Gecko</br>Build </td>
+            <td class="tablehead">Gecko Build </td>
             <td>{{job.gecko_build}}</td>
         </tr>
         <tr> 
-            <td class="tablehead">Gecko</br>Revision </td>
-            <td>{{job.gecko_revision}}</td>
+            <td class="tablehead">Gecko Revision </td>
+            <td><a href={{job.gecko_revision.link}}>
+                {{job.gecko_revision.revision}}
+                </a>
+            </td>
         </tr>
         <tr> 
-            <td class="tablehead">Gecko</br>Version </td>
+            <td class="tablehead">Gecko Version </td>
             <td>{{job.gecko_version}}</td>
         </tr>
+        {% endif %}
     </table>
-    {% endif %}
-    <table>
+    <table class="resulttable">
     <tr>
         <td class="tablehead"> Name </td>
         <td class="tablehead"> Class </td>
@@ -64,10 +74,12 @@
     {% for test in job.tests.keys() %}
         {% for run in job.tests[test] %}
             <tr>
-                <td> {{run.test_name}} </td>
+                <td>
+                    <a href="/job/{{job.job}}/tests/{{run.test_name}}">{{run.test_name}}</a>
+                </td>
                 <td> {{run.class}} </td>
                 <td>
-                    <div class="{{run.result}}" data-idx={{loop.index0}}>
+                    <div class="{{run.result}}" data-idx={{loop.index0}} data-test={{test}}>
                     {% if run.result == "Passed" %}
                         ✔
                     {% elif run.result == "Skipped" %}
@@ -85,8 +97,12 @@
                     {% endif %}
                     </div>
                 </td>
+                <td>
+                    {{run.duration}}
+                </td>
             </tr>
         {% endfor %}
     {% endfor %}
     </table>
+<script src="/js/displayLogs.js"></script>
 {% endblock %}

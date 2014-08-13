@@ -1,6 +1,6 @@
 import flask as f
 from flask import Flask, render_template, request, redirect, abort, flash
-from scraper import scraper
+from scraper.scraper import JenkinsScraper
 from scraper.multiscraper import MultiScraper
 import time
 
@@ -123,10 +123,10 @@ def format_date(num):
     return time.strftime('%d %b %Y %X', date)
 
 if __name__ == '__main__':
-    scrape = MultiScraper(scraper.JenkinsScraper('http://selenium.qa.mtv2.mozilla.com:8080/view/B2G/',
+    scrape = MultiScraper(JenkinsScraper('http://selenium.qa.mtv2.mozilla.com:8080/view/B2G/',
                                                  'static/Reports/selenium',
                                                  ['download', 'perf']),
-                          scraper.JenkinsScraper('http://jenkins1.qa.scl3.mozilla.com/',
+                          JenkinsScraper('http://jenkins1.qa.scl3.mozilla.com/',
                                                  'static/Reports/jenkins1',
                                                  ['download', 'perf']))
     scrape.generate_build_cache()

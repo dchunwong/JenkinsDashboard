@@ -12,13 +12,6 @@ var test_data = [];
     test_data[{{loop.index0 }}] = {{ test_dict|tojson|safe }};
 {% endfor %}
 </script>
-<div id="modal_container">
-    <div id="modal_window">
-    <p id="modal_close"><strong> X </strong></p>
-    <hr></hr>        
-    <div id="modal_content"></div>
-    </div>
-</div>
 <h1>
     Test statistics for {{tests[0].test_list[0].test_name}}
 </h1>
@@ -33,7 +26,7 @@ var test_data = [];
     </span>
     <div id="preview"></div>
 </div>
-<table id="resulttable">
+<table class="resulttable">
 {% if "gaia_revision" in tests[0].keys() %}
     <tr id="labelrow">
         <td class="tablehead"> Build </td>
