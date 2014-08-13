@@ -46,10 +46,16 @@ def display_sparse(job, build):
 
 @app.route('/job/<job>/tests/')
 def display_tests(job):
+    local_builds = scrape.get_local_builds(job)
+    if not len(local_builds):
+            return render_template('list_tests.html',
+                           jobs=get_filtered_jobs(),
+                           job=job
+                            )
     return render_template('list_tests.html',
                            jobs=get_filtered_jobs(),
-                           test_list=sorted(scrape.list_tests(job)),
-                           job=job)
+                           job=scrape.make_build_dict(job, local_builds[-1])
+                            )
 
 
 @app.route('/job/<job>/tests/<test>/')

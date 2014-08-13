@@ -1,30 +1,31 @@
 {% extends "layout.html" %}
 {% block body %}
 <h1>
-    List of tests for {{job}}
+    List of tests for {{job.job}}
 </h1>
-    {% if test_list|length == 0 %}
+    {% if job is string %}
         No tests exist for {{job}} 
     {% else %}
     {% set limit = 15 %}
-        {% set len= (((test_list|length)/limit)|round(method='floor')|int) %}
+    {% set keys = job.tests.keys()|sort %}
+        {% set len= (((keys|length)/limit)|round(method='floor')|int) %}
         {%for i in range(len) %}
                 <div class="object_container">
                 {%for j in range(limit)%}
-                    <a href="{{test_list[j+i*limit]}}">
-                        <div class="test">
-                        {{test_list[j+i*limit]}} 
+                    <a href="{{keys[j+i*limit]}}">
+                        <div class="test {{job.tests[keys[j+i*limit]][0].result}}">
+                        {{keys[j+i*limit]}} 
                         </div>
                     </a>
                 {% endfor %}
                 </div>
         {% endfor %}
-        {% if test_list|length % limit != 0 %}
+        {% if keys|length % limit != 0 %}
             <div class="object_container">
-                {% for i in range(test_list|length % limit) %}
-                    <a href="{{test_list[i+len]}}">
-                        <div class="test">
-                        {{test_list[i+len]}} 
+                {% for i in range(keys|length % limit) %}
+                    <a href="{{keys[i+len]}}">
+                        <div class="test {{job.tests[keys[i+len]][0].result}}">
+                        {{keys[i+len]}} 
                         </div>
                     </a>
                 {% endfor %}

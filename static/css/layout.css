@@ -9,6 +9,7 @@
     margin: 3px;
     font-family: sans-serif;
     color: white;
+    border-radius: 2px;
     text-overflow: ellipsis;
     overflow: hidden;
 }
@@ -24,7 +25,7 @@
     display: inline-block;
     margin-bottom: 5px;
     vertical-align: top;
-    max-width: 325px;
+    width: 325px;
 }
 .group_container{
     display:inline-block;
@@ -60,6 +61,24 @@
 .bannerbutton.end{
     border-left: 1px solid;
     border-color: #E66000;
+}
+.test.Passed{
+    background-color: seagreen;
+}
+.test.Skipped{
+    background-color: darkKhaki;
+}
+.test.Error{
+    background-color: firebrick;
+}
+.test.Failure{
+    background-color: salmon;
+}
+.test.Expected.Failure{
+    background-color: DarkOrange;
+}
+.test.Unexpected.Pass{
+    background-color:SteelBlue;
 }
 .select2-choice > span{
     color: grey;
