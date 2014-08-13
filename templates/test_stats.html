@@ -26,6 +26,14 @@ var test_data = [];
     </span>
     <div id="preview"></div>
 </div>
+<div id="resultcount">
+    <div class="Passed">✔:</div> | 
+    <div class="Error"><strong>E</strong>:</div> | 
+    <div class="Failure">✘:</div> | 
+    <div class="Unexpected Pass"><strong>UXP</strong>:</div> | 
+    <div class="Skipped"><strong>S</strong>:</div> | 
+    <div class="Expected Failure"><strong>XF</strong>:</div>
+</div>
 <table class="resulttable">
 {% if "gaia_revision" in tests[0].keys() %}
     <tr id="labelrow">
@@ -159,4 +167,5 @@ var test_data = [];
 </table>
 
 <script src="/js/graphing.min.js"></script>
+<script src="/js/countResults.js"></script>
 {% endblock %}

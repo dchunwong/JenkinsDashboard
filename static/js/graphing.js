@@ -2,14 +2,14 @@ var baseWidth = 810;
 var baseHeight = 375;
 var scaler = .9;
 
-function countResults(data, clearDate){
+function countByDate(data, clearDate){
+    var passes = {};
     var errors = {};
     var fails = {};
-    var passes = {};
+    var uxpass = {};
     var xfails = {};
     var skips = {};
     var builds = {};
-    var uxpass = {};
     for(var i = 0; i < data.length; i++){
         var date = new Date(data[i].date*1000);
         if(clearDate){
@@ -73,7 +73,7 @@ function keysToXY(object){
 }
 
 function makeGraph(data, width, height, clearDate){
-    var results = countResults(data, clearDate);
+    var results = countByDate(data, clearDate);
     var renderer, modifier, graph, y_axis, x_axis, hoverDetail, shelving, legend;
     if(window.innerWidth < 866){
         modifier = window.innerWidth/866*scaler;
@@ -95,9 +95,17 @@ function makeGraph(data, width, height, clearDate){
         height: height*modifier,
         builds: results.builds,
         series: [{
-            name: "Passes",
-            data: keysToXY(results.passes),
-            color: "seagreen"
+            name: "X-Fails",
+            data: keysToXY(results.xfails),
+            color: "darkorange"
+        }, {
+            name: "Skips",
+            data: keysToXY(results.skips),
+            color: "darkkhaki"
+        }, {
+            name: "UX-Passes",
+            data: keysToXY(results.uxpass),
+            color: "steelblue"
         }, {
             name: "Fails",
             data: keysToXY(results.fails),
@@ -107,17 +115,9 @@ function makeGraph(data, width, height, clearDate){
             data: keysToXY(results.errors),
             color: "firebrick"
         }, {
-            name: "Skips",
-            data: keysToXY(results.skips),
-            color: "darkkhaki"
-        }, {
-            name: "X-Fails",
-            data: keysToXY(results.xfails),
-            color: "darkorange"
-        }, {
-            name: "UX-Passes",
-            data: keysToXY(results.uxpass),
-            color: "steelblue"
+            name: "Passes",
+            data: keysToXY(results.passes),
+            color: "seagreen"
         }]
     });
     x_axis = new Rickshaw.Graph.Axis.Time({

@@ -64,6 +64,14 @@
         </tr>
         {% endif %}
     </table>
+    <div id="resultcount">
+        <div class="Passed">✔:</div> | 
+        <div class="Error"><strong>E</strong>:</div> | 
+        <div class="Failure">✘:</div> | 
+        <div class="Unexpected Pass"><strong>UXP</strong>:</div> | 
+        <div class="Skipped"><strong>S</strong>:</div> | 
+        <div class="Expected Failure"><strong>XF</strong>:</div>
+    </div>
     <table class="resulttable">
     <tr>
         <td class="tablehead"> Name </td>
@@ -105,4 +113,6 @@
     {% endfor %}
     </table>
 <script src="/js/displayLogs.js"></script>
+<script src="/js/countResults.js"></script>
+
 {% endblock %}
