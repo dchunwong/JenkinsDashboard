@@ -2,7 +2,8 @@
     padding-left: 10px;
 }
 .job{
-    background-color: seagreen;
+    background-color: steelblue;
+    height:35px;
 }
 .job, .test{
     padding: 10px;
